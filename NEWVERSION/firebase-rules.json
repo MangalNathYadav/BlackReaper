@@ -1,0 +1,152 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    
+    "users": {
+      "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['displayName', 'rcCells', 'mode', 'stats'])",
+        
+        "displayName": { ".validate": "newData.isString() && newData.val().length <= 50" },
+        "email": { ".validate": "newData.isString() || newData.val() === ''" },
+        "isAnonymous": { ".validate": "newData.isBoolean()" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "lastLogin": { ".validate": "newData.isNumber()" },
+        "rcCells": { ".validate": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() <= data.val() || root.child('transactions').child($uid).exists())" },
+        "mode": { ".validate": "newData.isString() && (newData.val() === 'human' || newData.val() === 'ghoul')" },
+        
+        "stats": {
+          ".validate": "newData.hasChildren(['tasksCompleted', 'pomodorosCompleted', 'battlesWon', 'battlesLost', 'journalEntries'])",
+          "tasksCompleted": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "pomodorosCompleted": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "battlesWon": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "battlesLost": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "journalEntries": { ".validate": "newData.isNumber() && newData.val() >= 0" }
+        }
+      }
+    },
+    
+    "tasks": {
+      "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid",
+        
+        "$taskId": {
+          ".validate": "newData.hasChildren(['text', 'completed'])",
+          "text": { ".validate": "newData.isString() && newData.val().length <= 500" },
+          "completed": { ".validate": "newData.isBoolean()" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "completedAt": { ".validate": "!newData.exists() || newData.isNumber()" }
+        }
+      }
+    },
+    
+    "journals": {
+      "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid",
+        
+        "$entryId": {
+          ".validate": "newData.hasChildren(['title', 'content', 'mood'])",
+          "title": { ".validate": "newData.isString() && newData.val().length <= 100" },
+          "content": { ".validate": "newData.isString() && newData.val().length <= 10000" },
+          "mood": { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "imageData": { ".validate": "!newData.exists() || (newData.isString() && newData.val().length <= 5000000)" },
+          "createdAt": { ".validate": "newData.isNumber()" }
+        }
+      }
+    },
+    
+    "pomodoros": {
+      "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid",
+        
+        "$pomodoroId": {
+          ".validate": "newData.hasChildren(['duration', 'completedAt'])",
+          "duration": { ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 3600" },
+          "completedAt": { ".validate": "newData.isNumber()" }
+        }
+      }
+    },
+    
+    "battles": {
+      ".read": "auth !== null",
+      
+      "$battleId": {
+        ".write": "auth !== null && (auth.uid === newData.child('player1Id').val() || auth.uid === newData.child('player2Id').val())",
+        
+        ".validate": "newData.hasChildren(['player1Id', 'player2Id', 'status', 'createdAt'])",
+        "player1Id": { ".validate": "newData.isString()" },
+        "player2Id": { ".validate": "newData.isString()" },
+        "player1Stats": { ".validate": "newData.hasChildren(['hp', 'atk', 'def', 'speed'])" },
+        "player2Stats": { ".validate": "newData.hasChildren(['hp', 'atk', 'def', 'speed'])" },
+        "status": { ".validate": "newData.isString() && (newData.val() === 'active' || newData.val() === 'completed')" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "completedAt": { ".validate": "!newData.exists() || newData.isNumber()" },
+        "winnerId": { ".validate": "!newData.exists() || (newData.isString() && (newData.val() === newData.parent().child('player1Id').val() || newData.val() === newData.parent().child('player2Id').val()))" },
+        
+        "turns": {
+          "$turnId": {
+            ".validate": "newData.hasChildren(['playerId', 'action', 'timestamp'])",
+            "playerId": { 
+              ".validate": "newData.isString() && (newData.val() === newData.parent().parent().child('player1Id').val() || newData.val() === newData.parent().parent().child('player2Id').val())"
+            },
+            "action": { ".validate": "newData.isString() && newData.val().length <= 50" },
+            "timestamp": { ".validate": "newData.isNumber()" }
+          }
+        },
+        
+        "currentTurn": { 
+          ".validate": "newData.isString() && (newData.val() === newData.parent().child('player1Id').val() || newData.val() === newData.parent().child('player2Id').val())"
+        }
+      }
+    },
+    
+    "chat": {
+      "ghoulRooms": {
+        "global": {
+          ".read": "auth !== null",
+          
+          "messages": {
+            ".write": "auth !== null",
+            
+            "$messageId": {
+              ".validate": "newData.hasChildren(['userId', 'displayName', 'message', 'timestamp'])",
+              "userId": { ".validate": "newData.isString() && newData.val() === auth.uid" },
+              "displayName": { ".validate": "newData.isString() && newData.val().length <= 50" },
+              "message": { ".validate": "newData.isString() && newData.val().length <= 500" },
+              "timestamp": { ".validate": "newData.isNumber()" }
+            }
+          },
+          
+          "presence": {
+            "$uid": {
+              ".read": true,
+              ".write": "auth !== null && auth.uid === $uid",
+              ".validate": "newData.hasChildren(['status', 'lastActive'])",
+              "status": { ".validate": "newData.isString() && (newData.val() === 'online' || newData.val() === 'offline')" },
+              "lastActive": { ".validate": "newData.isNumber()" }
+            }
+          }
+        }
+      }
+    },
+    
+    "transactions": {
+      "$uid": {
+        ".read": "auth !== null && auth.uid === $uid",
+        ".write": "auth !== null && auth.uid === $uid",
+        
+        "$transactionId": {
+          ".validate": "newData.hasChildren(['amount', 'reason', 'timestamp'])",
+          "amount": { ".validate": "newData.isNumber()" },
+          "reason": { ".validate": "newData.isString() && newData.val().length <= 100" },
+          "timestamp": { ".validate": "newData.isNumber()" }
+        }
+      }
+    }
+  }
+}

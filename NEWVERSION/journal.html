@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Journal</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <!-- Internal CSS for Journal -->
+    <style>
+        /* Dashboard Layout - Base Styles */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            transition: all var(--transition-normal);
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: all var(--transition-normal);
+            z-index: 10;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            margin-bottom: var(--space-xl);
+            text-align: center;
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header .logo {
+            font-size: var(--font-xl);
+            margin-bottom: var(--space-md);
+            background: linear-gradient(45deg, var(--primary-color), var(--text-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .sidebar-header .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: var(--space-md);
+            gap: var(--space-xs);
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: var(--font-md);
+        }
+        
+        .rc-cells {
+            color: var(--primary-color);
+            font-weight: 700;
+            padding: var(--space-xs) var(--space-md);
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            border-radius: var(--radius-full);
+            font-size: var(--font-sm);
+        }
+        
+        /* Navigation Links */
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin-bottom: var(--space-xl);
+            flex-grow: 1;
+        }
+        
+        .nav-links li {
+            margin-bottom: var(--space-sm);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            padding: var(--space-md);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-normal);
+        }
+        
+        .nav-links li.active {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        .nav-links li.active a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-links li:hover:not(.active) {
+            background-color: var(--accent-color);
+        }
+        
+        .nav-links li:hover:not(.active) a {
+            transform: translateX(5px);
+        }
+        
+        .icon {
+            margin-right: var(--space-md);
+            font-size: var(--font-md);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Mode Toggle in Sidebar - Matching Login Page */
+        .mode-toggle-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md) 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .mode-toggle {
+            position: relative;
+            width: 140px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-toggle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mode-toggle-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, 
+                var(--bg-color), 
+                var(--bg-color) 50%, 
+                var(--ghoul-primary) 50%, 
+                var(--ghoul-primary)
+            );
+            opacity: 0.1;
+        }
+        
+        .mode-toggle-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1;
+        }
+        
+        .human-icon, .ghoul-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            height: 100%;
+            width: 50%;
+        }
+        
+        .human-icon i, .ghoul-icon i {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        
+        .human-icon {
+            color: var(--primary-color);
+        }
+        
+        .ghoul-icon {
+            color: var(--ghoul-primary);
+            opacity: 0.5;
+        }
+        
+        .mode-toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .mode-toggle-knob {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 70px;
+            height: 30px;
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .mode-icon-active {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        /* Animation for toggle knob */
+        @keyframes pulse-knob {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 5px rgba(var(--primary-color-rgb), 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0);
+            }
+        }
+        
+        /* Animation for toggle rotation */
+        @keyframes rotate-icon {
+            0% { transform: translateX(0) rotate(0); }
+            50% { transform: translateX(33px) rotate(180deg); }
+            100% { transform: translateX(66px) rotate(360deg); }
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: var(--space-xl);
+            transition: all var(--transition-normal);
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            position: relative;
+        }
+        
+        /* Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .content-header h2 {
+            font-size: var(--font-xxl);
+            color: var(--primary-color);
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .content-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+        }
+
+        /* Date Time Display */
+        .date-time {
+            color: var(--secondary-color);
+            font-size: var(--font-md);
+            font-weight: 500;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .header-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space-sm);
+        }
+        
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: var(--space-lg);
+            transition: all var(--transition-normal);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), transparent);
+            opacity: 0.7;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: var(--space-md);
+            font-size: var(--font-lg);
+            font-weight: 600;
+            padding-bottom: var(--space-xs);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        /* Journal Specific Styles */
+        .ghoul-only-warning {
+            margin-bottom: var(--space-xl);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .journal-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .journal-entry {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .journal-entry::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), transparent);
+        }
+        
+        .journal-entry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .entry-title {
+            font-size: var(--font-lg);
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .entry-date {
+            font-size: var(--font-sm);
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+        
+        .entry-mood {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-size: var(--font-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-md);
+        }
+        
+        .mood-calm { 
+            background-color: rgba(100, 200, 255, 0.2);
+            color: #3498db;
+        }
+        
+        .mood-happy { 
+            background-color: rgba(255, 200, 100, 0.2);
+            color: #f39c12;
+        }
+        
+        .mood-sad { 
+            background-color: rgba(100, 100, 255, 0.2);
+            color: #5352ed;
+        }
+        
+        .mood-angry { 
+            background-color: rgba(255, 100, 100, 0.2);
+            color: #e74c3c;
+        }
+        
+        .mood-hungry { 
+            background-color: rgba(150, 100, 255, 0.2);
+            color: #8e44ad;
+        }
+        
+        .mood-conflicted { 
+            background-color: rgba(100, 255, 150, 0.2);
+            color: #27ae60;
+        }
+        
+        .entry-content {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+            max-height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .entry-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(transparent, var(--card-bg));
+        }
+        
+        .entry-image {
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            object-fit: cover;
+            max-height: 200px;
+        }
+        
+        .entry-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--space-xxl) 0;
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+        
+        .empty-state p {
+            margin-bottom: var(--space-lg);
+        }
+        
+        /* Journal Form Modal */
+        .journal-form {
+            max-width: 650px;
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-md);
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: var(--font-sm);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: var(--font-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .image-preview {
+            margin-top: var(--space-sm);
+            max-width: 100%;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modal-appear 0.3s ease-out;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), transparent);
+        }
+        
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+        
+        /* Button Styles */
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: var(--font-sm);
+        }
+        
+        .btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn.secondary {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .btn.danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn.ghost {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn.ghost:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: var(--font-md);
+        }
+        
+        #logout-btn {
+            width: 100%;
+            margin-top: var(--space-md);
+        }
+        
+        /* Ghoul Mode Specific */
+        body.ghoul-mode .journal-entry::before {
+            background: linear-gradient(to bottom, var(--ghoul-primary), transparent);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        body.ghoul-mode .modal-content::before {
+            background: linear-gradient(to right, var(--ghoul-primary), transparent);
+        }
+        
+        body.ghoul-mode .content-header h2::after {
+            background: linear-gradient(90deg, var(--ghoul-primary), transparent);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes modal-appear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: var(--space-md);
+                left: var(--space-md);
+                z-index: 1000;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                cursor: pointer;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .journal-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-md);
+            }
+            
+            .journal-form {
+                width: 95%;
+                padding: var(--space-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar/Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="user-info">
+                    <span class="user-name">Loading...</span>
+                    <span class="rc-cells">RC: <span id="rc-cell-count">0</span></span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard.html">
+                        <span class="icon"><i class="fas fa-chart-line"></i></span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="journal.html">
+                        <span class="icon"><i class="fas fa-book"></i></span>
+                        Journal
+                    </a>
+                </li>
+                <li>
+                    <a href="battle.html">
+                        <span class="icon"><i class="fas fa-fist-raised"></i></span>
+                        Battle
+                    </a>
+                </li>
+                <li>
+                    <a href="stats.html">
+                        <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                        Stats
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html">
+                        <span class="icon"><i class="fas fa-user"></i></span>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mode-toggle-wrapper">
+                <div class="mode-toggle" id="mode-toggle-btn">
+                    <div class="mode-toggle-container">
+                        <div class="mode-toggle-background"></div>
+                        <div class="mode-toggle-icons">
+                            <div class="human-icon">
+                                <i class="fas fa-user"></i>
+                                <span>Human</span>
+                            </div>
+                            <div class="ghoul-icon">
+                                <i class="fas fa-mask"></i>
+                                <span>Ghoul</span>
+                            </div>
+                        </div>
+                        <div class="mode-toggle-slider">
+                            <div class="mode-toggle-knob">
+                                <span class="mode-icon-active"><i class="fas fa-user"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="logout-btn" class="btn danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </nav>
+
+        <!-- Mobile Menu Toggle -->
+        <div class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h2><i class="fas fa-book"></i> Journal</h2>
+                <div class="header-actions">
+                    <div class="date-time">
+                        <span id="current-date"></span> | 
+                        <span id="current-time"></span>
+                    </div>
+                    <button id="new-entry-btn" class="btn primary">
+                        <i class="fas fa-plus"></i> New Entry
+                    </button>
+                </div>
+            </header>
+
+            <div class="ghoul-only-warning" id="ghoul-mode-required" style="display: none;">
+                <div class="card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Human Mode Active</h3>
+                    <p>Journal entries are only available in Ghoul Mode. Your innermost thoughts are only accessible when you embrace your true nature.</p>
+                    <button id="switch-to-ghoul-btn" class="btn primary">
+                        <i class="fas fa-toggle-on"></i> Switch to Ghoul Mode
+                    </button>
+                </div>
+            </div>
+
+            <div class="journal-content" id="journal-content">
+                <!-- Journal entries will be loaded here -->
+                <div class="empty-state">
+                    <i class="fas fa-book-open" style="font-size: 4rem; color: var(--secondary-color); opacity: 0.5; margin-bottom: var(--space-lg);"></i>
+                    <p>Your journal is empty. Start documenting your journey...</p>
+                    <button id="start-journal-btn" class="btn primary">
+                        <i class="fas fa-pen"></i> Write First Entry
+                    </button>
+                </div>
+                
+                <!-- Example Journal Entry (will be replaced by dynamic content) -->
+                <article class="journal-entry" style="display: none;">
+                    <div class="entry-header">
+                        <h3 class="entry-title">My First Day as a Ghoul</h3>
+                        <span class="entry-date">August 9, 2025</span>
+                    </div>
+                    <span class="entry-mood mood-conflicted">Conflicted</span>
+                    <div class="entry-content">
+                        <p>Today I realized that I'm no longer fully human. The changes are subtle at first, but I can feel something different inside me. My senses are heightened, especially my sense of smell. Food tastes like ash in my mouth, yet when I pass by people on the street, I feel a strange hunger...</p>
+                    </div>
+                    <div class="entry-actions">
+                        <button class="btn ghost btn-expand">Read More</button>
+                        <div class="btn-group">
+                            <button class="btn btn-icon secondary"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-icon danger"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- New Entry Modal -->
+            <div class="modal" id="new-entry-modal">
+                <div class="modal-content journal-form">
+                    <h3><i class="fas fa-pen-fancy"></i> New Journal Entry</h3>
+                    <form id="journal-form">
+                        <div class="form-group">
+                            <label for="entry-title"><i class="fas fa-heading"></i> Title</label>
+                            <input type="text" id="entry-title" placeholder="Give your entry a title..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="entry-mood"><i class="fas fa-smile"></i> Current Mood</label>
+                            <select id="entry-mood">
+                                <option value="calm">Calm</option>
+                                <option value="happy">Happy</option>
+                                <option value="sad">Sad</option>
+                                <option value="angry">Angry</option>
+                                <option value="hungry">Hungry</option>
+                                <option value="conflicted">Conflicted</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="entry-content"><i class="fas fa-pen-alt"></i> Content</label>
+                            <textarea id="entry-content" rows="6" placeholder="Share your thoughts, experiences, or inner darkness..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="entry-image"><i class="fas fa-camera"></i> Image (optional)</label>
+                            <input type="file" id="entry-image" accept="image/*" class="form-control">
+                            <div class="image-preview" id="image-preview"></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancel-entry" class="btn secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn primary">
+                                <i class="fas fa-save"></i> Save Entry
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Inactivity Warning Modal -->
+    <div class="modal" id="inactivity-modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-exclamation-circle"></i> Ghoul Mode Activating...</h3>
+            <p>Your human form is weakening due to inactivity. Ghoul mode will activate in <span id="inactivity-countdown">30</span> seconds.</p>
+            <button id="cancel-mode-switch" class="btn primary">
+                <i class="fas fa-shield-alt"></i> Stay Human
+            </button>
+        </div>
+    </div>
+
+    <!-- View Entry Modal -->
+    <div class="modal" id="view-entry-modal">
+        <div class="modal-content journal-form">
+            <h3 id="view-entry-title">Entry Title</h3>
+            <div class="entry-details">
+                <span class="entry-date" id="view-entry-date"></span>
+                <span class="entry-mood" id="view-entry-mood"></span>
+            </div>
+            <div class="entry-image-container" id="view-entry-image-container">
+                <img id="view-entry-image" class="entry-image" src="" alt="">
+            </div>
+            <div class="entry-content" id="view-entry-content">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="form-actions">
+                <button id="close-view-entry" class="btn secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <div class="btn-group">
+                    <button id="edit-viewed-entry" class="btn primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button id="delete-viewed-entry" class="btn danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/journal.js"></script>
+    
+    <script>
+        // Initialize current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            
+            if(document.getElementById('current-date')) {
+                document.getElementById('current-date').textContent = now.toLocaleDateString(undefined, dateOptions);
+            }
+            if(document.getElementById('current-time')) {
+                document.getElementById('current-time').textContent = now.toLocaleTimeString(undefined, timeOptions);
+            }
+        }
+        
+        // Update every minute
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+        
+        // Mode toggle functionality is now handled by main.js
+        // Initialize the toggle UI when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved mode preference
+            const savedMode = localStorage.getItem('preferredMode');
+            const isGhoulMode = savedMode === 'ghoul';
+            
+            // Update the body class
+            document.body.classList.toggle('ghoul-mode', isGhoulMode);
+            
+            // Initialize toggle button visuals
+            const toggleBtn = document.getElementById('mode-toggle-btn');
+            if (toggleBtn) {
+                const knob = toggleBtn.querySelector('.mode-toggle-knob');
+                const iconActive = toggleBtn.querySelector('.mode-icon-active');
+                const humanIcon = toggleBtn.querySelector('.human-icon');
+                const ghoulIcon = toggleBtn.querySelector('.ghoul-icon');
+                
+                // Update toggle UI based on current mode
+                if (isGhoulMode) {
+                    knob.style.transform = 'translateX(66px)';
+                    iconActive.innerHTML = '<i class="fas fa-mask"></i>';
+                    humanIcon.style.opacity = '0.5';
+                    ghoulIcon.style.opacity = '1';
+                } else {
+                    knob.style.transform = 'translateX(0)';
+                    iconActive.innerHTML = '<i class="fas fa-user"></i>';
+                    humanIcon.style.opacity = '1';
+                    ghoulIcon.style.opacity = '0.5';
+                }
+                
+                // Add custom click handler for journal-specific functionality
+                toggleBtn.addEventListener('click', function() {
+                    // The main toggle functionality is in main.js
+                    // This is just for journal-specific behaviors
+                    setTimeout(() => {
+                        const isGhoulMode = document.body.classList.contains('ghoul-mode');
+                        
+                        // Show/hide ghoul-only warning if needed
+                        const journalContent = document.getElementById('journal-content');
+                        const ghoulWarning = document.getElementById('ghoul-mode-required');
+                        
+                        if (isGhoulMode) {
+                            if (ghoulWarning) ghoulWarning.style.display = 'none';
+                            if (journalContent) journalContent.style.display = 'grid';
+                        } else {
+                            if (ghoulWarning) ghoulWarning.style.display = 'block';
+                            if (journalContent) journalContent.style.display = 'none';
+                        }
+                    }, 100); // Small delay to ensure the mode has been toggled by main.js
+                });
+            }
+            
+            // Show/hide ghoul-only warning based on mode
+            const journalContent = document.getElementById('journal-content');
+            const ghoulWarning = document.getElementById('ghoul-mode-required');
+            // Use the existing isGhoulMode from above
+            
+            if (isGhoulMode) {
+                if (ghoulWarning) ghoulWarning.style.display = 'none';
+                if (journalContent) journalContent.style.display = 'grid';
+            } else {
+                if (ghoulWarning) ghoulWarning.style.display = 'block';
+                if (journalContent) journalContent.style.display = 'none';
+            }
+        });
+        
+        // Start journal button functionality
+        if (document.getElementById('start-journal-btn')) {
+            document.getElementById('start-journal-btn').addEventListener('click', function() {
+                document.getElementById('new-entry-btn').click();
+            });
+        }
+        
+        // Switch to ghoul mode button
+        if (document.getElementById('switch-to-ghoul-btn')) {
+            document.getElementById('switch-to-ghoul-btn').addEventListener('click', function() {
+                document.getElementById('mode-toggle-input').checked = true;
+                document.getElementById('mode-toggle-input').dispatchEvent(new Event('change'));
+            });
+        }
+        
+        // Image preview functionality for journal entry form
+        document.getElementById('entry-image').addEventListener('change', function(event) {
+            const imagePreview = document.getElementById('image-preview');
+            imagePreview.innerHTML = '';
+            
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Entry image preview';
+                    imagePreview.appendChild(img);
+                }
+                
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+    </script>
+    <!-- Theme Animation Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="assets/js/ghoul-animation.js"></script>
+    <script src="assets/js/theme-animation-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start BlackReaper Application",
+			"type": "shell",
+			"command": "cd backend && python app.py",
+			"group": "run",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

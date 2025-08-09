@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Battle</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" type="image/png" href="assets/images/mask.png">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        /* Battle-specific styles */
+        .battle-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .battle-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .battle-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .battle-header p {
+            color: var(--text);
+            opacity: 0.8;
+        }
+        
+        .battle-modes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .battle-mode-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .battle-mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .battle-mode-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .battle-mode-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .battle-mode-description {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+        
+        .battle-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .battle-arena {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .battle-arena::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('assets/images/battle-bg.jpg') center/cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .battle-header h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .battle-status {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .battle-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .battle-opponent, .battle-player {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .battle-player {
+            flex-direction: row-reverse;
+        }
+        
+        .opponent-icon, .player-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .opponent-info, .player-info {
+            flex: 1;
+        }
+        
+        .battle-vs {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 0 20px;
+        }
+        
+        .health-bar {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .battle-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .battle-controls button {
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .battle-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .battle-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .log-entry {
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .battle-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .continue-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .battle-statistics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+        
+        /* Kagune selection */
+        .kagune-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .kagune-option {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .kagune-option:hover, .kagune-option.selected {
+            background-color: rgba(225, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .kagune-option.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .kagune-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .kagune-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .kagune-desc {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Visual effects */
+        .battle-active .container {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(225, 0, 0, 0.3); }
+            70% { box-shadow: 0 0 0 10px rgba(225, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 0, 0, 0); }
+        }
+        
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            .battle-modes {
+                grid-template-columns: 1fr;
+            }
+            
+            .battle-main {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .battle-statistics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="ghoul">
+    <!-- Nav bar -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="assets/images/mask.png" alt="Kaneki Mask" class="mini-mask">
+            <span>BlackReaper</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="journal.html">Journal</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="stats.html">Stats</a></li>
+            <li><a href="battle.html" class="active">Battle</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div class="mode-toggle">
+                <span>Human</span>
+                <label class="switch">
+                    <input type="checkbox" id="mode-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <span>Ghoul</span>
+            </div>
+            <button id="logout-btn">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container battle-container">
+        <div class="battle-header">
+            <h1>Kagune <span class="text-danger">Combat</span></h1>
+            <p>Test your ghoul abilities and increase your RC level</p>
+        </div>
+        
+        <div class="battle-modes">
+            <div class="battle-mode-card" id="battle-ccg">
+                <div class="battle-mode-icon">👮</div>
+                <div class="battle-mode-title">CCG Raid</div>
+                <div class="battle-mode-description">Face off against CCG investigators who hunt ghouls</div>
+            </div>
+            
+            <div class="battle-mode-card" id="battle-ghoul">
+                <div class="battle-mode-icon">👁️</div>
+                <div class="battle-mode-title">Ghoul Territory</div>
+                <div class="battle-mode-description">Battle other ghouls to expand your hunting ground</div>
+            </div>
+        </div>
+        
+        <div class="battle-section">
+            <h2>Kagune Selection</h2>
+            <p>Choose your kagune type for battle</p>
+            
+            <div class="kagune-selection" id="kagune-options">
+                <!-- Kagune options will be populated via JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Battle Arena -->
+        <div class="battle-section" id="battle-section">
+            <!-- Will be populated by battle.js -->
+        </div>
+        
+        <!-- Battle Statistics -->
+        <div class="battle-section">
+            <h2>Combat Statistics</h2>
+            
+            <div class="battle-statistics">
+                <div class="stat-box">
+                    <div class="stat-value" id="victories">0</div>
+                    <div class="stat-label">Victories</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value" id="defeats">0</div>
+                    <div class="stat-label">Defeats</div>
+                </div>
+                
+                <div class="stat-box">
+                    <div class="stat-value" id="rc-gained">0</div>
+                    <div class="stat-label">RC Cells Gained</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio Controls -->
+        <div class="audio-controls">
+            <button id="toggle-audio">
+                <span class="audio-on">🔊</span>
+                <span class="audio-off hidden">🔇</span>
+            </button>
+            <audio id="background-audio" loop>
+                <source src="assets/audio/battle.mp3" type="audio/mp3">
+            </audio>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/kagune.js"></script>
+    <script src="assets/js/analytics.js"></script>
+    <script src="assets/js/battle.js"></script>
+    <script src="assets/js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is in Ghoul Mode
+            if (!document.body.classList.contains('ghoul')) {
+                // Redirect to dashboard if not in Ghoul Mode
+                window.location.href = 'dashboard.html';
+            }
+            
+            // Initialize kagune selection
+            initKaguneSelection();
+            
+            // Battle mode selection
+            document.getElementById('battle-ccg').addEventListener('click', () => {
+                setActiveBattleMode('ccg');
+            });
+            
+            document.getElementById('battle-ghoul').addEventListener('click', () => {
+                setActiveBattleMode('ghoul');
+            });
+            
+            // Load battle statistics
+            loadBattleStats();
+        });
+        
+        function initKaguneSelection() {
+            const kaguneOptions = document.getElementById('kagune-options');
+            const kaguneTypes = [
+                {
+                    id: 'rinkaku',
+                    name: 'Rinkaku',
+                    icon: '🦂',
+                    description: 'Versatile tentacle-like kagune with high regenerative properties',
+                    unlocked: true
+                },
+                {
+                    id: 'ukaku',
+                    name: 'Ukaku',
+                    icon: '🦅',
+                    description: 'Lightweight, fast-firing projectile kagune',
+                    unlocked: localStorage.getItem('kagune_ukaku') === 'unlocked'
+                },
+                {
+                    id: 'koukaku',
+                    name: 'Koukaku',
+                    icon: '🛡️',
+                    description: 'Heavy, defensive kagune with high durability',
+                    unlocked: localStorage.getItem('kagune_koukaku') === 'unlocked'
+                },
+                {
+                    id: 'bikaku',
+                    name: 'Bikaku',
+                    icon: '🦎',
+                    description: 'Balanced tail-like kagune with no notable weaknesses',
+                    unlocked: localStorage.getItem('kagune_bikaku') === 'unlocked'
+                }
+            ];
+            
+            // Get user's selected kagune
+            const userKagune = localStorage.getItem('user_kagune') || 'rinkaku';
+            
+            // Create kagune options
+            kaguneOptions.innerHTML = '';
+            kaguneTypes.forEach(kagune => {
+                const option = document.createElement('div');
+                option.className = `kagune-option ${kagune.unlocked ? '' : 'locked'} ${kagune.id === userKagune ? 'selected' : ''}`;
+                option.dataset.kagune = kagune.id;
+                
+                option.innerHTML = `
+                    <div class="kagune-icon">${kagune.icon}</div>
+                    <div class="kagune-name">${kagune.name}</div>
+                    <div class="kagune-desc">${kagune.description}</div>
+                `;
+                
+                if (kagune.unlocked) {
+                    option.addEventListener('click', () => selectKagune(kagune.id));
+                }
+                
+                kaguneOptions.appendChild(option);
+            });
+        }
+        
+        function selectKagune(kaguneId) {
+            // Update selection UI
+            document.querySelectorAll('.kagune-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            document.querySelector(`.kagune-option[data-kagune="${kaguneId}"]`).classList.add('selected');
+            
+            // Save selection
+            localStorage.setItem('user_kagune', kaguneId);
+            
+            // Show notification
+            if (window.BlackReaperNotifications) {
+                window.BlackReaperNotifications.show(
+                    'Kagune Selected', 
+                    `You are now using the ${kaguneId.charAt(0).toUpperCase() + kaguneId.slice(1)} kagune type.`,
+                    'success'
+                );
+            }
+        }
+        
+        function setActiveBattleMode(mode) {
+            // Update UI
+            document.querySelectorAll('.battle-mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            document.getElementById(`battle-${mode}`).classList.add('selected');
+            
+            // Save selection
+            localStorage.setItem('battle_mode', mode);
+            
+            // Refresh battle section
+            if (window.BlackReaperBattle) {
+                // Reset and initialize battle arena
+                document.getElementById('battle-section').innerHTML = '';
+                window.BlackReaperBattle.init();
+            }
+        }
+        
+        function loadBattleStats() {
+            // Load battle statistics from localStorage
+            document.getElementById('victories').textContent = localStorage.getItem('battle_victories') || '0';
+            document.getElementById('defeats').textContent = localStorage.getItem('battle_defeats') || '0';
+            document.getElementById('rc-gained').textContent = localStorage.getItem('battle_rc_gained') || '0';
+        }
+    </script>
+</body>
+</html>

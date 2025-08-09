@@ -1,0 +1,818 @@
+/* Auth Forms Styles */
+
+/* Container Styles */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(30deg, var(--primary-color) 12%, transparent 12.5%, transparent 87%, var(--primary-color) 87.5%, var(--primary-color)),
+    linear-gradient(150deg, var(--primary-color) 12%, transparent 12.5%, transparent 87%, var(--primary-color) 87.5%, var(--primary-color)),
+    linear-gradient(30deg, var(--primary-color) 12%, transparent 12.5%, transparent 87%, var(--primary-color) 87.5%, var(--primary-color)),
+    linear-gradient(150deg, var(--primary-color) 12%, transparent 12.5%, transparent 87%, var(--primary-color) 87.5%, var(--primary-color)),
+    linear-gradient(60deg, var(--secondary-color) 25%, transparent 25.5%, transparent 75%, var(--secondary-color) 75%, var(--secondary-color)),
+    linear-gradient(60deg, var(--secondary-color) 25%, transparent 25.5%, transparent 75%, var(--secondary-color) 75%, var(--secondary-color));
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+  transition: all var(--transition-normal), background-position 30s linear;
+  animation: bg-scroll 60s linear infinite;
+  z-index: -1;
+}
+
+@keyframes bg-scroll {
+  0% { background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px; }
+  100% { background-position: 500px 500px, 500px 500px, 520px 535px, 520px 535px, 500px 500px, 520px 535px; }
+}
+
+/* Header Styles */
+.auth-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  width: 100%;
+  transition: all var(--transition-normal);
+}
+
+.logo-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: var(--space-md);
+}
+
+.logo {
+  font-size: var(--font-xxl);
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 0;
+  position: relative;
+  text-transform: uppercase;
+  background: linear-gradient(45deg, var(--primary-color), var(--text-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all var(--transition-normal);
+}
+
+.logo-animation {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary-color), transparent);
+  animation: logo-line 3s ease-in-out infinite alternate;
+}
+
+.tagline {
+  font-size: var(--font-md);
+  color: var(--secondary-color);
+  margin-bottom: var(--space-xl);
+  font-weight: 500;
+  transition: all var(--transition-normal);
+}
+
+.accent-text {
+  color: var(--primary-color);
+  font-weight: 700;
+  transition: color var(--transition-normal);
+}
+
+/* Main Auth Card */
+.auth-main {
+  width: 100%;
+  max-width: 480px;
+  perspective: 1000px;
+}
+
+.auth-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform var(--transition-normal);
+  width: 100%;
+  background-color: var(--card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+/* Auth Tabs */
+.auth-tabs {
+  display: flex;
+  width: 100%;
+  position: relative;
+  background-color: var(--accent-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: var(--space-md);
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary-color);
+  font-weight: 600;
+  transition: all var(--transition-normal);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  outline: none;
+}
+
+.auth-tab i {
+  transition: all var(--transition-normal);
+}
+
+.auth-tab:hover {
+  color: var(--primary-color);
+}
+
+.auth-tab.active {
+  color: var(--primary-color);
+}
+
+.tab-slider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 3px;
+  background-color: var(--primary-color);
+  transition: transform var(--transition-normal);
+}
+
+.auth-form {
+  width: 100%;
+  padding: var(--space-xl);
+  transition: all var(--transition-fast);
+  transform: translateX(100%);
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.auth-form.active {
+  transform: translateX(0);
+  position: relative;
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+  animation: fade-in 0.4s ease-out;
+}
+
+.form-header h2 {
+  font-size: var(--font-xl);
+  margin: 0;
+  color: var(--primary-color);
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.form-icon {
+  height: 48px;
+  width: 48px;
+  background-color: var(--accent-color);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+}
+
+.form-icon i {
+  font-size: var(--font-lg);
+  color: var(--primary-color);
+  transition: all var(--transition-normal);
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: var(--space-lg);
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+  color: var(--secondary-color);
+  transition: all var(--transition-fast);
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: var(--space-md);
+  color: var(--secondary-color);
+  transition: all var(--transition-fast);
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: var(--space-md) var(--space-md) var(--space-md) calc(var(--space-md) * 3);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: var(--font-md);
+  transition: all var(--transition-fast);
+}
+
+.input-with-icon input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.input-with-icon input:focus + i {
+  color: var(--primary-color);
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-md);
+  background: none;
+  border: none;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.password-toggle:hover {
+  color: var(--primary-color);
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xl);
+  gap: var(--space-md);
+}
+
+.form-actions .btn {
+  flex: 1;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-md);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn.secondary {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Form Switch */
+.form-switch {
+  text-align: center;
+  margin-top: var(--space-lg);
+  font-size: var(--font-sm);
+  color: var(--secondary-color);
+}
+
+.form-switch a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.form-switch a:hover {
+  text-decoration: underline;
+}
+
+/* Error Message */
+.auth-error {
+  color: var(--danger-color);
+  text-align: center;
+  margin-top: var(--space-md);
+  padding: var(--space-sm);
+  font-size: var(--font-sm);
+  background-color: rgba(var(--danger-color-rgb), 0.1);
+  border-radius: var(--radius-sm);
+  display: none;
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Loading Screen */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: white;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+/* Mode Toggle */
+.mode-toggle-wrapper {
+  position: fixed;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  z-index: 100;
+  padding: 3px;
+  border-radius: 32px;
+  background: linear-gradient(
+    45deg, 
+    rgba(var(--primary-color-rgb), 0.1) 0%, 
+    rgba(var(--primary-color-rgb), 0.3) 50%, 
+    rgba(var(--primary-color-rgb), 0.1) 100%
+  );
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-normal);
+  animation: fade-in-up 1s ease-out;
+}
+
+.mode-toggle {
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  user-select: none;
+}
+
+.mode-toggle-container {
+  position: relative;
+  width: 110px;
+  height: 44px;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: all var(--transition-normal);
+}
+
+.mode-toggle-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    var(--human-primary) 0%, 
+    rgba(13, 110, 253, 0.8) 50%, 
+    var(--ghoul-primary) 50%, 
+    rgba(255, 0, 51, 0.8) 100%
+  );
+  transition: all var(--transition-normal);
+  opacity: 0.1;
+}
+
+.mode-toggle-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 1;
+}
+
+.human-icon, .ghoul-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-sm);
+  transition: all var(--transition-normal);
+}
+
+.human-icon span, .ghoul-icon span {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  margin-top: 2px;
+  opacity: 0.7;
+  transition: all var(--transition-normal);
+}
+
+.human-icon {
+  color: var(--human-primary);
+}
+
+.ghoul-icon {
+  color: var(--ghoul-primary);
+  opacity: 0.5;
+}
+
+.mode-toggle-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.mode-toggle-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2;
+  animation: pulse-knob 2s infinite;
+}
+
+.mode-icon-active {
+  color: var(--primary-color);
+  font-size: var(--font-md);
+  transition: all var(--transition-normal);
+}
+
+/* Hover effect */
+.mode-toggle-container:hover .mode-toggle-knob {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mode-toggle-container:hover .mode-toggle-background {
+  opacity: 0.15;
+}
+
+/* Ghoul mode toggle appearance */
+body.ghoul-mode .mode-toggle-knob {
+  transform: translateX(66px);
+  animation: pulse-knob 1.5s infinite;
+}
+
+body.ghoul-mode .mode-icon-active i.fa-user {
+  display: none;
+}
+
+body.ghoul-mode .mode-icon-active:before {
+  content: '\f1e2';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+body.ghoul-mode .human-icon {
+  opacity: 0.5;
+}
+
+body.ghoul-mode .ghoul-icon {
+  opacity: 1;
+}
+
+body.ghoul-mode .mode-toggle-container {
+  box-shadow: 0 4px 15px rgba(255, 0, 51, 0.25);
+}
+
+body.ghoul-mode .mode-toggle-wrapper {
+  background: linear-gradient(
+    45deg, 
+    rgba(255, 0, 51, 0.1) 0%, 
+    rgba(255, 0, 51, 0.3) 50%, 
+    rgba(255, 0, 51, 0.1) 100%
+  );
+  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.15);
+}
+
+/* Active state for knob */
+.mode-toggle-container:active .mode-toggle-knob {
+  transform: scale(0.95);
+}
+
+/* Custom glow effect on hover */
+.mode-toggle-wrapper:hover {
+  transform: translateY(-2px);
+}
+
+/* Add ripple effect on click */
+.mode-toggle-container:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(var(--primary-color-rgb), 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.mode-toggle-container:active:after {
+  animation: ripple 0.6s ease-out;
+}
+
+.toggle-ready {
+  animation: bounce 1s ease;
+}
+
+/* Ghoul Mode Styles */
+/* Toggle indicator style has been updated with mode-toggle-knob */
+
+body.ghoul-mode .auth-card {
+  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.15);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+body.ghoul-mode .auth-tabs {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+body.ghoul-mode .tab-slider {
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  height: 4px;
+}
+
+body.ghoul-mode .auth-tab.active {
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+}
+
+body.ghoul-mode .auth-tab i {
+  color: rgba(255, 0, 0, 0.7);
+}
+
+body.ghoul-mode .form-icon {
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+/* Footer Styles */
+.auth-footer {
+  margin-top: var(--space-xl);
+  text-align: center;
+  color: var(--secondary-color);
+  font-size: var(--font-sm);
+  width: 100%;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes logo-line {
+  0% { width: 0%; left: 0; }
+  50% { width: 100%; }
+  100% { width: 0%; left: 100%; }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+}
+
+@keyframes tab-glow {
+  0% { box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.3); }
+  50% { box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.5); }
+  100% { box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.3); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+body.ghoul-mode .tab-slider {
+  animation: tab-glow 2s infinite;
+}
+
+/* Form Transitions */
+.auth-form {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Mode Toggle Animation */
+.toggle-ready {
+  animation: bounce 1s ease;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+  40% {transform: translateY(-10px);}
+  60% {transform: translateY(-5px);}
+}
+
+/* Mode Transition Styles */
+.mode-transition-overlay {
+  backdrop-filter: blur(5px);
+}
+
+body.ghoul-mode .auth-container {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.6) 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: backgroundScroll 50s linear infinite;
+}
+
+/* Mode toggle animations */
+@keyframes pulse-knob {
+  0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+}
+
+@keyframes rotate-icon {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* These styles are now consolidated with the main mode toggle styles */
+
+/* Custom glow effect on hover */
+.mode-toggle-wrapper:hover {
+  transform: translateY(-2px);
+}
+
+/* Add ripple effect on click */
+.mode-toggle-container:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(var(--primary-color-rgb), 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.mode-toggle-container:active:after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+@keyframes backgroundScroll {
+  from { background-position: 0 0; }
+  to { background-position: 100px 100px; }
+}
+
+body.ghoul-mode .logo {
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+  background: linear-gradient(45deg, var(--primary-color), #ff6666);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+body.ghoul-mode .logo-animation {
+  background: linear-gradient(90deg, var(--primary-color), transparent);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+body.ghoul-mode .auth-form {
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+body.human-mode .auth-form {
+  border: 1px solid rgba(13, 110, 253, 0.1);
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .auth-form {
+    padding: var(--space-lg);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .mode-toggle-wrapper {
+    top: var(--space-md);
+    right: var(--space-md);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-form {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Guest Mode Button Styling */
+#guest-login {
+  background-color: var(--secondary-color);
+}
+
+body.ghoul-mode #guest-login {
+  background-color: var(--ghoul-secondary);
+}

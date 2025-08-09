@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Journal</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" type="image/png" href="assets/images/mask.png">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+    <!-- Nav bar -->
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="assets/images/mask.png" alt="Kaneki Mask" class="mini-mask">
+            <span>BlackReaper</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="journal.html" class="active">Journal</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="stats.html">Stats</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div class="mode-toggle">
+                <span>Human</span>
+                <label class="switch">
+                    <input type="checkbox" id="mode-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span>Ghoul</span>
+            </div>
+            <button id="logout-btn">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container journal-container">
+        <div class="journal-header">
+            <h1>Your <span class="text-danger">Darkest</span> Thoughts</h1>
+            <p class="journal-subtitle">What's keeping you awake tonight?</p>
+        </div>
+
+        <div class="journal-content">
+            <div class="journal-form">
+                <div class="mood-selector">
+                    <span>Current Mood:</span>
+                    <select id="mood-select">
+                        <option value="calm">Calm</option>
+                        <option value="anxious">Anxious</option>
+                        <option value="angry">Angry</option>
+                        <option value="hungry">Hungry</option>
+                        <option value="broken">Broken</option>
+                    </select>
+                </div>
+                
+                <div class="journal-editor">
+                    <textarea id="journal-entry" placeholder="Begin typing your thoughts..." class="glitch-typing"></textarea>
+                    
+                    <div class="journal-actions">
+                        <button id="save-journal" class="glitch-btn">Save Entry</button>
+                        <button id="clear-journal">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="journal-entries">
+                <h2>Previous Entries</h2>
+                <div class="entries-filter">
+                    <input type="text" id="filter-entries" placeholder="Search entries...">
+                </div>
+                
+                <div id="entries-container" class="entries-list">
+                    <!-- Journal entries will be loaded here dynamically -->
+                    <div class="entry blur-content human-only">
+                        <div class="entry-header">
+                            <span class="entry-date">2025-08-01</span>
+                            <span class="entry-mood angry">Angry</span>
+                        </div>
+                        <div class="entry-content">
+                            <p>These entries are only fully visible in Ghoul Mode...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="psychological-quote">
+            <p id="psych-quote">"Sometimes, all we need is for someone to hear our voice."</p>
+        </div>
+
+        <!-- Audio Controls -->
+        <div class="audio-controls">
+            <button id="toggle-audio">
+                <span class="audio-on">🔊</span>
+                <span class="audio-off hidden">🔇</span>
+            </button>
+            <audio id="background-audio" loop>
+                <source src="assets/audio/background.mp3" type="audio/mp3">
+            </audio>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/kagune.js"></script>
+    <script src="assets/js/analytics.js"></script>
+    <script src="assets/js/voice.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/journal.js"></script>
+</body>
+</html>
