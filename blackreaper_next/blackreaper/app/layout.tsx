@@ -1,11 +1,11 @@
 "use client";
-import { NextUIProvider } from "@heroui/react";
+import { HeroUIProvider } from "@heroui/react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <NextUIProvider>{children}</NextUIProvider>
+        <HeroUIProvider>{children}</HeroUIProvider>
       </body>
     </html>
   );

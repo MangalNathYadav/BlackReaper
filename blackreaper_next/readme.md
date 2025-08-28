@@ -1,5 +1,5 @@
-⚡ BlackReaper (Next.js + NextUI + Framer Motion + Firebase) — 20 Step Build Guide
-Step 1: Project Initialization
+⚡ BlackReaper (Next.js + HeroUI + Framer Motion + Firebase) — 20 Step Build Guide
+Step 1: ProjeBuild components/TBuild components/TaskList.tsx with HeroUI list + checkbox. Store tasks in Firebase Realtime DB under /tasks/{uid}/.emeToggle.tsx using HeroUI Button + Framer Motion for smooth animations. Save mode to localStorage.t Initialization
 
 Prompt:
 
@@ -12,9 +12,9 @@ Step 2: Install Dependencies
 
 Prompt:
 
-Install NextUI, Framer Motion, Firebase, and other utilities.
+Install HeroUI, Framer Motion, Firebase, and other utilities.
 
-npm install @nextui-org/react framer-motion firebase
+npm install @heroui/react framer-motion firebase
 
 Step 3: Global Styles
 
@@ -22,20 +22,20 @@ Prompt:
 
 Add globals.css with dark Tokyo Ghoul-style theme base, and setup data-mode="human|ghoul" CSS variables.
 
-Step 4: Wrap App with NextUI
+Step 4: Wrap App with HeroUI
 
 Prompt:
 
-Configure app/layout.tsx to use NextUIProvider for global theming.
+Configure app/layout.tsx to use HeroUIProvider for global theming.
 
 "use client";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <NextUIProvider>{children}</NextUIProvider>
+        <HeroUIProvider>{children}</HeroUIProvider>
       </body>
     </html>
   );
@@ -52,13 +52,14 @@ import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL!,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+  apiKey: "AIzaSyCEEMiU0Brkt2zQIpnh_9DA5lpRWz8lIxU",
+  authDomain: "blackreaper-68d80.firebaseapp.com",
+  databaseURL: "https://blackreaper-68d80-default-rtdb.firebaseio.com",
+  projectId: "blackreaper-68d80",
+  storageBucket: "blackreaper-68d80.firebasestorage.app",
+  messagingSenderId: "878532400780",
+  appId: "1:878532400780:web:7e08a1d0e490a7282c8da9",
+  measurementId: "G-BQM80KXY60"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -69,7 +70,7 @@ Step 6: Auth Page UI
 
 Prompt:
 
-Build app/auth/page.tsx with NextUI Card, Input, Button for login/register/guest access.
+Build app/auth/page.tsx with HeroUI Card, Input, Button for login/register/guest access.
 
 Step 7: Implement Email & Anonymous Login
 
