@@ -1,38 +1,345 @@
 @import "tailwindcss";
 
+/* Tokyo Ghoul Theme Variables */
+:root {
+  /* Human Theme (CCG) */
+  --human-bg-primary: #0d1b2a;
+  --human-bg-secondary: #1b263b;
+  --human-bg-tertiary: #415a77;
+  --human-text-primary: #e0e1dd;
+  --human-text-secondary: #c9c9c9;
+  --human-accent-primary: #3a86ff;
+  --human-accent-secondary: #4361ee;
+  --human-border-color: #415a77;
+  --human-glow: rgba(58, 134, 255, 0.5);
+  
+  /* Ghoul Theme (Aogiri) */
+  --ghoul-bg-primary: #1a0015;
+  --ghoul-bg-secondary: #2d0025;
+  --ghoul-bg-tertiary: #4d0040;
+  --ghoul-text-primary: #ffccd5;
+  --ghoul-text-secondary: #ff4d6d;
+  --ghoul-accent-primary: #ff0055;
+  --ghoul-accent-secondary: #ff4d6d;
+  --ghoul-border-color: #660033;
+  --ghoul-glow: rgba(255, 0, 85, 0.7);
+  
+  /* Common */
+  --transition-slow: 0.5s ease;
+  --transition-normal: 0.3s ease;
+  --transition-fast: 0.2s ease;
+}
+
 /* Tokyo Ghoul Dark Theme */
 [data-mode="human"] {
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2a2a2a;
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --accent-primary: #4a90e2;
-  --accent-secondary: #357abd;
-  --border-color: #404040;
+  --bg-primary: var(--human-bg-primary);
+  --bg-secondary: var(--human-bg-secondary);
+  --bg-tertiary: var(--human-bg-tertiary);
+  --text-primary: var(--human-text-primary);
+  --text-secondary: var(--human-text-secondary);
+  --accent-primary: var(--human-accent-primary);
+  --accent-secondary: var(--human-accent-secondary);
+  --border-color: var(--human-border-color);
+  --theme-glow: var(--human-glow);
 }
 
 [data-mode="ghoul"] {
-  --bg-primary: #0d0d0d;
-  --bg-secondary: #1a1a1a;
-  --text-primary: #ff4757;
-  --text-secondary: #ff6b81;
-  --accent-primary: #ff3838;
-  --accent-secondary: #ff5252;
-  --border-color: #333333;
+  --bg-primary: var(--ghoul-bg-primary);
+  --bg-secondary: var(--ghoul-bg-secondary);
+  --bg-tertiary: var(--ghoul-bg-tertiary);
+  --text-primary: var(--ghoul-text-primary);
+  --text-secondary: var(--ghoul-text-secondary);
+  --accent-primary: var(--ghoul-accent-primary);
+  --accent-secondary: var(--ghoul-accent-secondary);
+  --border-color: var(--ghoul-border-color);
+  --theme-glow: var(--ghoul-glow);
 }
 
+/* Base Styles */
 body {
-  background: var(--bg-primary, #1a1a1a);
-  color: var(--text-primary, #ffffff);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: all 0.3s ease;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* Selection Colors */
+::selection {
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
 }
 
 /* Global styles for Tokyo Ghoul theme */
 * {
   box-sizing: border-box;
+  border-color: var(--border-color);
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Typography Enhancements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 3.5rem;
+  text-shadow: 0 2px 10px var(--theme-glow);
+}
+
+h2 {
+  font-size: 2.5rem;
+  border-bottom: 2px solid var(--accent-primary);
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+h3 {
+  font-size: 1.8rem;
+  color: var(--accent-secondary);
+}
+
+/* Link Styles */
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition-normal), text-shadow var(--transition-normal);
+  position: relative;
+}
+
+a:hover {
+  color: var(--accent-secondary);
+  text-shadow: 0 0 8px var(--theme-glow);
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--accent-primary);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform var(--transition-normal);
+}
+
+a:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Button Enhancements */
+button {
+  transition: all var(--transition-normal);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+button:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Card Styles */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px var(--theme-glow);
+}
+
+/* Animation Keyframes */
+@keyframes kagune-pulse {
+  0% {
+    box-shadow: 0 0 5px var(--accent-primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--accent-primary);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--accent-primary);
+  }
+}
+
+@keyframes rc-cell-float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-glow {
+  0% {
+    text-shadow: 0 0 5px var(--theme-glow);
+  }
+  50% {
+    text-shadow: 0 0 15px var(--theme-glow), 0 0 20px var(--theme-glow);
+  }
+  100% {
+    text-shadow: 0 0 5px var(--theme-glow);
+  }
+}
+
+/* Utility Classes */
+.kagune-pulse {
+  animation: kagune-pulse 2s infinite;
+}
+
+.rc-cell-float {
+  animation: rc-cell-float 3s ease-in-out infinite;
+}
+
+.text-glow {
+  animation: text-glow 2s ease-in-out infinite;
+}
+
+.theme-transition {
+  transition: all var(--transition-slow);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Form Elements */
+input, textarea, select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  transition: all var(--transition-normal);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--theme-glow);
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+tr:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Code Blocks */
+code {
+  background-color: var(--bg-secondary);
+  color: var(--accent-secondary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+pre {
+  background-color: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Focus States for Accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
 }

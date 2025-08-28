@@ -74,6 +74,21 @@ export const db = getDatabase(app);
 
 ✅ **COMPLETED** - Firebase configuration created with real credentials
 
+Step 5.5: Landing Page
+
+Prompt:
+
+Create app/page.tsx with beautiful Tokyo Ghoul-themed landing page featuring HeroUI components and Framer Motion animations.
+
+Features:
+- Hero section with BlackReaper branding
+- Human vs Ghoul path selection cards
+- Call-to-action buttons linking to auth
+- Responsive design with dark theme
+- Smooth animations and transitions
+
+✅ **COMPLETED** - Landing page created with Tokyo Ghoul theme
+
 Step 6: Auth Page UI
 
 Prompt:

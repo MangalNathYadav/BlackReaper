@@ -1,103 +1,110 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Button, Card, CardBody } from "@heroui/react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+export default function LandingPage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white flex flex-col">
+      <header className="w-full py-10 flex flex-col items-center justify-center bg-gradient-to-r from-red-900/60 to-transparent">
+        <motion.h1
+          initial={{ opacity: 0, y: -40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-6xl md:text-8xl font-extrabold tracking-tight text-center mb-2"
+        >
+          <span className="text-red-500 drop-shadow-lg">Black</span>
+          <span className="text-white">Reaper</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="text-lg md:text-2xl text-gray-400 text-center max-w-2xl mt-4"
+        >
+          Enter the world of BlackReaper. Will you embrace your humanity or unleash your inner ghoul?
+        </motion.p>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+      <main className="flex-1 flex flex-col items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7 }}
+          className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-10"
+        >
+          {/* Human Mode Card */}
+          <motion.div whileHover={{ scale: 1.04, boxShadow: "0 0 40px #3a86ff55" }}>
+            <Card className="bg-gradient-to-br from-blue-900/60 to-blue-800/30 border-2 border-blue-500/40 shadow-xl">
+              <CardBody className="p-8 flex flex-col items-center">
+                <motion.div
+                  initial={{ scale: 0.8, rotate: -10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="w-16 h-16 rounded-full bg-blue-900 flex items-center justify-center mb-4 shadow-lg"
+                >
+                  <span className="text-3xl text-blue-400">🧑‍💻</span>
+                </motion.div>
+                <h3 className="text-2xl font-bold text-blue-400 mb-2">Human Mode</h3>
+                <p className="text-gray-300 mb-4 text-center">
+                  Focus on productivity, earn RC Cells, and climb the ranks as a legendary human.
+                </p>
+                <ul className="text-left text-sm text-gray-400 space-y-2 mb-6 w-full">
+                  <li>✅ Pomodoro Timer with RC rewards</li>
+                  <li>✅ Task Management System</li>
+                  <li>✅ Personal Journal</li>
+                  <li>✅ Leaderboards & Stats</li>
+                </ul>
+                <Link href="/auth?mode=human">
+                  <Button color="primary" className="w-full font-bold text-lg">
+                    Enter as Human
+                  </Button>
+                </Link>
+              </CardBody>
+            </Card>
+          </motion.div>
+
+          {/* Ghoul Mode Card */}
+          <motion.div whileHover={{ scale: 1.04, boxShadow: "0 0 40px #ff005555" }}>
+            <Card className="bg-gradient-to-br from-red-900/60 to-red-800/30 border-2 border-red-500/40 shadow-xl">
+              <CardBody className="p-8 flex flex-col items-center">
+                <motion.div
+                  initial={{ scale: 0.8, rotate: 10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="w-16 h-16 rounded-full bg-red-900 flex items-center justify-center mb-4 shadow-lg"
+                >
+                  <span className="text-3xl text-red-400">👹</span>
+                </motion.div>
+                <h3 className="text-2xl font-bold text-red-400 mb-2">Ghoul Mode</h3>
+                <p className="text-gray-300 mb-4 text-center">
+                  Embrace the darkness, battle in Kagune arenas, and dominate the underworld as a fearsome ghoul.
+                </p>
+                <ul className="text-left text-sm text-gray-400 space-y-2 mb-6 w-full">
+                  <li>✅ Kagune Battle System</li>
+                  <li>✅ RC Cell Combat Rewards</li>
+                  <li>✅ Ghoul Chat Rooms</li>
+                  <li>✅ Territory Control</li>
+                </ul>
+                <Link href="/auth?mode=ghoul">
+                  <Button color="danger" className="w-full font-bold text-lg">
+                    Enter as Ghoul
+                  </Button>
+                </Link>
+              </CardBody>
+            </Card>
+          </motion.div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="text-center text-gray-400 text-sm mt-12"
+        >
+          &copy; 2025 BlackReaper. Built with Next.js, HeroUI, and Firebase. Inspired by Tokyo Ghoul.
+        </motion.div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
