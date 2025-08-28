@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal | BlackReaper</title>
+    <meta name="description" content="Track your thoughts and progress in BlackReaper's Tokyo Ghoul inspired productivity journal">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Journal Page Specific Styles */
+        .journal-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .journal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .journal-entry-form {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-row input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-row textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .mood-selector {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .mood-option:hover {
+            background: var(--hover-bg);
+        }
+
+        .mood-option.selected {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .mood-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .journal-save-btn {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .journal-save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .journal-entries {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .journal-entry {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .journal-entry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .entry-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .entry-date {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .entry-mood {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .mood-excited { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .mood-happy { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+        .mood-neutral { background: rgba(158, 158, 158, 0.2); color: #9E9E9E; }
+        .mood-sad { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
+        .mood-angry { background: rgba(244, 67, 54, 0.2); color: #F44336; }
+
+        .entry-content {
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .entry-action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .entry-action-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .entry-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .sort-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sort-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sort-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .sort-options {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 5px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 5px 0;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .sort-options.active {
+            display: block;
+        }
+
+        .sort-option {
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .sort-option:hover {
+            background: var(--hover-bg);
+        }
+
+        .no-entries {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--text-secondary);
+        }
+
+        .no-entries i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .mood-selector {
+                justify-content: center;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-mask"></i>
+            <span>BlackReaper</span>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+            <a href="battle.html"><i class="fa-solid fa-khanda"></i><span>Battle</span></a>
+            <a href="journal.html" class="active"><i class="fa-solid fa-book"></i><span>Journal</span></a>
+            <a href="stats.html"><i class="fa-solid fa-chart-line"></i><span>Stats</span></a>
+            <a href="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="theme-toggle">
+                <i class="fa-solid fa-moon"></i>
+                <span>Ghoul Mode</span>
+                <div class="toggle-switch">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <div class="logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="menu-toggle">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="logo">
+            <i class="fa-solid fa-mask"></i>
+            <span>BlackReaper</span>
+        </div>
+        <div class="mobile-actions">
+            <div class="theme-toggle-mobile">
+                <i class="fa-solid fa-moon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="journal-container">
+            <div class="journal-header">
+                <h1>Personal Journal</h1>
+                <p>Track your thoughts, progress, and reflections in your journey</p>
+            </div>
+
+            <!-- Journal Entry Form -->
+            <div class="journal-entry-form">
+                <form id="journal-form">
+                    <div class="form-row">
+                        <label for="entry-title">Entry Title</label>
+                        <input type="text" id="entry-title" placeholder="Today's reflection..." required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label for="entry-content">Entry Content</label>
+                        <textarea id="entry-content" placeholder="Write your thoughts here..." required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>How are you feeling today?</label>
+                        <div class="mood-selector">
+                            <div class="mood-option" data-mood="excited">
+                                <div class="mood-icon">😄</div>
+                                <span>Excited</span>
+                            </div>
+                            <div class="mood-option" data-mood="happy">
+                                <div class="mood-icon">😊</div>
+                                <span>Happy</span>
+                            </div>
+                            <div class="mood-option selected" data-mood="neutral">
+                                <div class="mood-icon">😐</div>
+                                <span>Neutral</span>
+                            </div>
+                            <div class="mood-option" data-mood="sad">
+                                <div class="mood-icon">😔</div>
+                                <span>Sad</span>
+                            </div>
+                            <div class="mood-option" data-mood="angry">
+                                <div class="mood-icon">😠</div>
+                                <span>Angry</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <div class="form-message"></div>
+                        <button type="submit" class="journal-save-btn">
+                            <i class="fa-solid fa-save"></i> Save Entry
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Journal Filter Controls -->
+            <div class="filter-controls">
+                <div class="entry-filters">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fa-solid fa-list"></i> All Entries
+                    </button>
+                    <button class="filter-btn" data-filter="excited">
+                        <i class="fa-solid fa-face-laugh"></i> Excited
+                    </button>
+                    <button class="filter-btn" data-filter="happy">
+                        <i class="fa-solid fa-face-smile"></i> Happy
+                    </button>
+                    <button class="filter-btn" data-filter="neutral">
+                        <i class="fa-solid fa-face-meh"></i> Neutral
+                    </button>
+                    <button class="filter-btn" data-filter="sad">
+                        <i class="fa-solid fa-face-sad-tear"></i> Sad
+                    </button>
+                    <button class="filter-btn" data-filter="angry">
+                        <i class="fa-solid fa-face-angry"></i> Angry
+                    </button>
+                </div>
+                
+                <div class="sort-dropdown">
+                    <button class="sort-btn" id="sort-btn">
+                        <i class="fa-solid fa-sort"></i> Sort by: Newest
+                    </button>
+                    <div class="sort-options" id="sort-options">
+                        <div class="sort-option" data-sort="newest">Newest first</div>
+                        <div class="sort-option" data-sort="oldest">Oldest first</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal Entries List -->
+            <div class="journal-entries" id="journal-entries">
+                <!-- Entries will be added here dynamically -->
+                <div class="no-entries" id="no-entries">
+                    <i class="fa-solid fa-book-open"></i>
+                    <h3>No journal entries yet</h3>
+                    <p>Start journaling to track your thoughts and progress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="firebase/firebase-bridge.js"></script>
+    <script src="firebase/state.js"></script>
+    <script src="firebase/firebase.js"></script>
+
+    <!-- App Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/journal.js"></script>
+    <script src="assets/js/theme-animator.js"></script>
+    <script src="assets/js/notifications.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script src="assets/js/service-worker-registration.js"></script>
+</body>
+</html>

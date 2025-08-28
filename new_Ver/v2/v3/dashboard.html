@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="human">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>BlackReaper • Dashboard</title>
+  <link rel="stylesheet" href="/assets/css/theme.css"/>
+  <link rel="stylesheet" href="/assets/css/base.css"/>
+  <link rel="stylesheet" href="/assets/css/components.css"/>
+  <style>
+    header.app { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; gap:1rem; position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--ring); z-index:10; }
+    .rc-meter { position:relative; height:10px; background:var(--ring); border-radius:6px; overflow:hidden; }
+    .rc-meter span { position:absolute; inset:0; background:linear-gradient(90deg,var(--accent),#ff6b4a); width:0%; transition:width .4s; }
+    .tasks-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem; }
+    .task { background:var(--card); padding:.65rem .7rem; border:1px solid var(--ring); border-radius:10px; display:grid; grid-template-columns: 1.5rem 1fr auto; gap:.55rem; align-items:center; }
+    .task.done { opacity:.55; text-decoration:line-through; }
+    .task button.small { font-size:.6rem; padding:.3rem .5rem; }
+    form#newTaskForm { display:flex; gap:.5rem; margin-bottom:.9rem; }
+    form#newTaskForm input { flex:1; }
+    .pill { background:var(--accent); color:#fff; font-size:.6rem; padding:.15rem .45rem; border-radius:999px; letter-spacing:.05em; }
+    main { padding:1rem; display:grid; gap:1.25rem; max-width:840px; margin:0 auto; }
+    section.card { display:flex; flex-direction:column; gap:.6rem; }
+    .logout-btn { background:#333; }
+    :root[data-mode="human"] .logout-btn { background:#eee; color:var(--fg); }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <button id="modeToggle" aria-label="Switch mode" aria-pressed="false"><span class="icon" aria-hidden="true">🌓</span><span class="txt">Human</span></button>
+  <header class="app">
+    <div class="row" style="gap:.6rem;">
+      <strong>Dashboard</strong>
+      <span class="pill" id="rcLabel">RC 0</span>
+    </div>
+    <div class="row" style="gap:.6rem;">
+      <nav class="row" style="gap:.4rem;">
+        <a href="/journal.html" class="sec" style="font-size:.6rem; padding:.35rem .55rem;">Journal</a>
+        <a href="/battle.html" class="sec" style="font-size:.6rem; padding:.35rem .55rem;">Battle</a>
+        <a href="/profile.html" class="sec" style="font-size:.6rem; padding:.35rem .55rem;">Profile</a>
+      </nav>
+      <div style="width:120px;" class="rc-meter" aria-label="RC meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="rcBar"></span></div>
+      <button id="logoutBtn" class="logout-btn sec">Logout</button>
+    </div>
+  </header>
+  <main id="main">
+    <section class="card" id="tasksSection">
+      <h2 style="margin:0; font-size:1rem;">Tasks</h2>
+      <form id="newTaskForm" autocomplete="off">
+        <input name="title" placeholder="New task title" required maxlength="80"/>
+        <select name="rcReward" aria-label="RC reward">
+          <option value="1">+1 RC</option>
+          <option value="2">+2 RC</option>
+          <option value="3">+3 RC</option>
+          <option value="4">+4 RC</option>
+          <option value="5" selected>+5 RC</option>
+        </select>
+        <button type="submit">Add</button>
+      </form>
+      <ul class="tasks-list" id="tasksList" aria-live="polite"></ul>
+    </section>
+  <section class="card" id="pomodoroPanel">
+      <h2 style="margin:0;font-size:1rem;">Pomodoro</h2>
+      <div class="row" style="gap:.5rem; flex-wrap:wrap;">
+        <label style="font-size:.65rem; display:flex; flex-direction:column; gap:.25rem;">Work (m)
+          <input id="pomoWork" type="number" min="1" max="120" value="25" style="width:70px;">
+        </label>
+        <label style="font-size:.65rem; display:flex; flex-direction:column; gap:.25rem;">Break (m)
+          <input id="pomoBreak" type="number" min="1" max="60" value="5" style="width:70px;">
+        </label>
+        <div class="stack" style="--space:.4rem;align-items:flex-start;">
+          <button id="pomoStart" class="sec" type="button">Start/Pause</button>
+          <button id="pomoReset" class="sec" type="button">Reset</button>
+        </div>
+        <div class="stack" style="--space:.3rem;">
+          <div id="pomoDisplay" style="font:600 1.6rem/1 var(--font-mono); letter-spacing:.05em;">25:00</div>
+          <small id="pomoStatus" style="opacity:.7;">idle</small>
+          <small style="opacity:.5;">Sessions: <span id="pomoSessions">0</span></small>
+        </div>
+      </div>
+      <div id="pomoLive" aria-live="polite" class="visually-hidden"></div>
+      <small style="opacity:.55;">+3 RC at end of each work session.</small>
+    </section>
+    <section class="card" id="quotesPanel">
+      <h2 style="margin:0;font-size:1rem;">Quotes</h2>
+      <p id="quoteBox" style="min-height:3em; font-style:italic;">…</p>
+      <button id="quoteBtn" class="sec" type="button">Another</button>
+      <small style="opacity:.55;">Ghoul mode distorts quotes.</small>
+    </section>
+  </main>
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/tasks.js"></script>
+  <script type="module" src="/assets/js/pomodoro.js"></script>
+  <script type="module" src="/assets/js/quotes.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "users": {"$uid": {".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid"}},
+    "stats": {"$uid": {".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid"}},
+    "tasks": {"$uid": {".read": "auth != null && auth.uid === $uid", "$taskId": {".write": "auth != null && auth.uid === $uid", ".validate": "newData.hasChildren(['title','done','rcReward','createdAt']) && newData.child('rcReward').val() <= 10"}}},
+    "journals": {"$uid": {".read": "auth != null && auth.uid === $uid", "$entryId": {".write": "auth != null && auth.uid === $uid", ".validate": "newData.hasChildren(['mood','text','createdAt','visibility']) && newData.child('visibility').val() === 'ghoul'"}}},
+    "chat": {"global": {"messages": {".read": "auth != null", ".write": "auth != null", "$msgId": {".validate": "newData.hasChildren(['uid','displayName','text','createdAt']) && newData.child('uid').val() === auth.uid && newData.child('text').val().length <= 500"}}}},
+    "presence": {"$uid": {".read": "auth != null", ".write": "auth != null && auth.uid === $uid"}},
+    "battles": {"$uid": {".read": "auth != null && auth.uid === $uid", ".write": "auth != null && auth.uid === $uid"}}
+  }
+}

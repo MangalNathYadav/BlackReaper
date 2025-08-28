@@ -1,0 +1,15 @@
+/* Theme tokens */
+:root {
+  --bg:#ffffff; --fg:#121212; --accent:#E94B3C; --muted:#6b7280;
+  --card:#f8f8f8; --cardHover:#f1f1f1; --ring:#e5e7eb; --radius:14px;
+  --shadow:0 4px 18px -6px rgba(0,0,0,.2);
+  --danger:#d00000; --success:#15803d;
+  --font-mono: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+}
+:root[data-mode="ghoul"] {
+  --bg:#0b0b0b; --fg:#e6e6e6; --accent:#8b0000; --muted:#9ca3af;
+  --card:#121212; --cardHover:#181818; --ring:#1f2937; --shadow:0 4px 22px -6px rgba(0,0,0,.75);
+  --danger:#ff2e2e; --success:#22c55e;
+}
+
+body { transition: background .5s, color .5s; }

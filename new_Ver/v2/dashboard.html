@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Dashboard</title>
+    
+    <!-- PWA & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c2c2c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="assets/images/placeholder-frame.png">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard-enhanced.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK v9 (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body class="human-mode">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="user-info">
+                    <div class="user-name">Loading...</div>
+                    <div class="rc-cells">
+                        <i class="fas fa-dna"></i>
+                        <span id="rc-cell-count">0</span> RC Cells
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard.html" class="active">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="journal.html">
+                        <i class="fas fa-book"></i>
+                        Journal
+                    </a>
+                </li>
+                <li>
+                    <a href="battle.html">
+                        <i class="fas fa-fist-raised"></i>
+                        Battle
+                    </a>
+                </li>
+                <li>
+                    <a href="stats.html">
+                        <i class="fas fa-chart-line"></i>
+                        Stats
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html">
+                        <i class="fas fa-user-circle"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="btn outline-primary">
+                    <i class="fas fa-adjust"></i>
+                    Toggle Theme
+                </button>
+                <button id="logout-btn" class="btn outline-secondary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Mobile Sidebar Toggle -->
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="dashboard-section">
+                <div class="dashboard-header">
+                    <h2 class="dashboard-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </h2>
+                    <div class="dashboard-actions">
+                        <button id="refresh-dashboard" class="btn outline-secondary">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Pomodoro Timer Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-clock"></i>
+                            Pomodoro Timer
+                        </h3>
+                        <div class="card-actions">
+                            <button class="btn outline-primary btn-sm" id="pomodoro-settings">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pomodoro-container">
+                        <div class="timer-display" id="timer-display">25:00</div>
+                        <div class="timer-controls">
+                            <button class="timer-btn active" id="pomodoro-btn">
+                                <i class="fas fa-brain"></i>
+                                Focus
+                            </button>
+                            <button class="timer-btn" id="short-break-btn">
+                                <i class="fas fa-coffee"></i>
+                                Short Break
+                            </button>
+                            <button class="timer-btn" id="long-break-btn">
+                                <i class="fas fa-couch"></i>
+                                Long Break
+                            </button>
+                        </div>
+                        <div class="timer-actions" style="margin-top: 20px;">
+                            <button class="btn primary" id="start-timer">
+                                <i class="fas fa-play"></i>
+                                Start
+                            </button>
+                            <button class="btn secondary" id="reset-timer" disabled>
+                                <i class="fas fa-redo"></i>
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Daily Progress Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Daily Progress
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span class="progress-title">Tasks Completed</span>
+                                    <span class="progress-value">0/5</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span class="progress-title">Focus Time</span>
+                                    <span class="progress-value">0/120 min</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span class="progress-title">RC Cell Growth</span>
+                                    <span class="progress-value">0/100</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Metrics Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-trophy"></i>
+                                Achievements
+                            </h3>
+                        </div>
+                        <div class="metrics-card">
+                            <i class="fas fa-medal metric-icon"></i>
+                            <div class="metric-value" id="achievements-count">0</div>
+                            <div class="metric-label">Achievements Unlocked</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's Tasks Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-tasks"></i>
+                                Today's Tasks
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn outline-primary btn-sm" id="add-task">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <ul class="task-list" id="task-list">
+                                <!-- Tasks will be loaded here -->
+                                <li class="task-item">
+                                    <input type="checkbox" class="task-checkbox">
+                                    <div class="task-content">
+                                        <div class="task-title">Complete dashboard design</div>
+                                        <div class="task-details">High priority • Due today</div>
+                                    </div>
+                                    <div class="task-actions">
+                                        <button class="task-action-btn">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="task-action-btn">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                                <li class="task-item">
+                                    <input type="checkbox" class="task-checkbox">
+                                    <div class="task-content">
+                                        <div class="task-title">Study for 1 hour</div>
+                                        <div class="task-details">Medium priority • Due today</div>
+                                    </div>
+                                    <div class="task-actions">
+                                        <button class="task-action-btn">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="task-action-btn">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-history"></i>
+                                Recent Activity
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <ul class="activity-list" id="activity-list">
+                                <!-- Activity items will be loaded here -->
+                                <li class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Task Completed</div>
+                                        <div class="activity-details">You completed "Study for exam"</div>
+                                        <div class="activity-time">2 hours ago</div>
+                                    </div>
+                                </li>
+                                <li class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-dna"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">RC Cells Earned</div>
+                                        <div class="activity-details">+50 RC cells from completing tasks</div>
+                                        <div class="activity-time">3 hours ago</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pomodoro History -->
+                <div class="pomodoro-history-card">
+                    <h4>
+                        <i class="fas fa-history"></i>
+                        Pomodoro History
+                    </h4>
+                    <div id="pomodoro-history">
+                        <!-- Pomodoro sessions will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase Core -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    
+    <!-- Feature Modules -->
+    <script type="module" src="assets/js/notifications.js"></script>
+    <script type="module" src="assets/js/theme-animator.js"></script>
+    <script type="module" src="assets/js/pomodoro.js"></script>
+    <script type="module" src="assets/js/tasks.js"></script>
+    
+    <!-- Main Script -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

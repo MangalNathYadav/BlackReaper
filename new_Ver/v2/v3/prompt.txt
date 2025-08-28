@@ -1,0 +1,379 @@
+
+**ROLE:** You are a meticulous senior front-end engineer. Build the **BlackReaper** web app (Kaneki Ken/Tokyo-Ghoul–inspired productivity + psychology dashboard) using **only**:
+
+* **HTML5**, **CSS3**, **Vanilla JavaScript**
+* **Firebase Authentication** (email/password + anonymous/guest)
+* **Firebase Realtime Database (RTDB)**
+* **No frameworks** (no React/Vue/Angular), **no bundlers**, **no Node runtime**, **no Python**, **no Firebase Storage**.
+* **All images/sprites are Base64 strings** (embedded or loaded from JSON).
+
+Deliver code as complete files that run from a static host (e.g., Firebase Hosting). Mobile-first.
+
+---
+
+## 0) Project constraints
+
+* Use ES modules (native `type="module"`) with **flat, readable JS**.
+* Keep everything in `/assets/js` and `/assets/css`.
+* **No external UI libs**; only system fonts + CSS you write.
+* **Images/sprites**: embedded Base64 constants; load via JS and assign to `<img>` or CSS `background-image`.
+* **Auth**: Email/Password + Anonymous guest mode.
+* **Database**: RTDB only.
+* **Accessibility**: keyboard accessible, `aria-*` where appropriate, high contrast in both themes.
+* **Performance**: Avoid layout thrash; prefer `transform`/`opacity` animations.
+* **Security**: RTDB rules below; client code follows them.
+
+**Use this Firebase config:**
+
+```js
+// /firebase/config.js
+export const firebaseConfig = {
+  apiKey: "AIzaSyCEEMiU0Brkt2zQIpnh_9DA5lpRWz8lIxU",
+  authDomain: "blackreaper-68d80.firebaseapp.com",
+  projectId: "blackreaper-68d80",
+  storageBucket: "blackreaper-68d80.firebasestorage.app",
+  messagingSenderId: "878532400780",
+  appId: "1:878532400780:web:7e08a1d0e490a7282c8da9",
+  measurementId: "G-BQM80KXY60"
+};
+```
+
+Initialize v9 modular SDKs only (Auth + RTDB). No legacy namespaces.
+
+---
+
+## 1) App Concept & Screens
+
+**Modes**
+
+* **Human Mode (light)**: Tasks, Pomodoro, quotes, RC meter.
+* **Ghoul Mode (dark)**: Journaling (mood + glitch typing), Ghoul Chat (global), Kagune Battle (vs. AI), corrupted thought generator.
+* **Mode Switching**: manual toggle + **auto-switch to Ghoul after 5 min inactivity** with a cancelable 10s overlay.
+
+**Pages (separate HTML files)**
+
+* `/index.html` – auth + landing (login, signup, guest)
+* `/dashboard.html` – tasks, Pomodoro, RC meter, quotes
+* `/journal.html` – mood journal (Ghoul-only visibility)
+* `/battle.html` – simple AI battle (turn-based)
+* `/profile.html` – profile, stats, theme preference
+
+**Shared header** with mode toggle + user menu.
+
+---
+
+## 2) Folder structure
+
+```
+BlackReaper/
+├─ index.html
+├─ dashboard.html
+├─ journal.html
+├─ battle.html
+├─ profile.html
+├─ assets/
+│  ├─ css/
+│  │  ├─ base.css
+│  │  ├─ theme.css
+│  │  └─ components.css
+│  ├─ js/
+│  │  ├─ app.js              // bootstraps firebase + auth gate + mode
+│  │  ├─ auth.js             // login/signup/guest/logout
+│  │  ├─ db.js               // RTDB helpers (read/write/tx)
+│  │  ├─ mode.js             // mode toggle + inactivity auto-switch
+│  │  ├─ pomodoro.js         // timer + RC award
+│  │  ├─ tasks.js            // CRUD tasks
+│  │  ├─ quotes.js           // Kaneki quotes
+│  │  ├─ journal.js          // moods + entries + glitch typing
+│  │  ├─ chat.js             // ghoul chat + presence
+│  │  ├─ battle.js           // AI battle logic (client-side)
+│  │  ├─ sprites.js          // Base64 sprite sheets + helpers
+│  │  └─ transform.js        // transformation overlay controller
+│  └─ audio/
+│     └─ sfx-toggle.mp3 (Base64 embedded constant)
+├─ firebase/
+│  ├─ config.js
+│  └─ rules.json
+└─ README.md
+```
+
+---
+
+## 3) RTDB schema
+
+```
+/users/{uid}:
+  profile: { displayName, avatarBase64, modePref, rcBalance, threatLevel, createdAt }
+/stats/{uid}:
+  { tasksDone, pomodoros, wins, losses, lastActive }
+/tasks/{uid}/{taskId}:
+  { title, done, rcReward, createdAt }
+/journals/{uid}/{entryId}:
+  { mood: "calm|angry|tired|empty", text, createdAt, visibility: "ghoul" }
+/chat/global/messages/{msgId}:
+  { uid, displayName, text, createdAt }
+/presence/{uid}:
+  { state: "online|offline", lastSeen }
+/battles/{uid}/lastAI:
+  { hp, enemyHp, result, createdAt } // simple history
+```
+
+---
+
+## 4) Firebase rules (write to `/firebase/rules.json` and reference in README)
+
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "stats": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "tasks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$taskId": {
+          ".write": "auth != null && auth.uid === $uid",
+          // rcReward caps to mitigate abuse
+          ".validate": "newData.hasChildren(['title','done','rcReward','createdAt']) && newData.child('rcReward').val() <= 10"
+        }
+      }
+    },
+    "journals": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$entryId": {
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.hasChildren(['mood','text','createdAt','visibility']) && newData.child('visibility').val() === 'ghoul'"
+        }
+      }
+    },
+    "chat": {
+      "global": {
+        "messages": {
+          ".read": "auth != null",
+          ".write": "auth != null",
+          "$msgId": {
+            ".validate": "newData.hasChildren(['uid','displayName','text','createdAt']) && newData.child('uid').val() === auth.uid && newData.child('text').val().length <= 500"
+          }
+        }
+      }
+    },
+    "presence": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "battles": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 5) Transformation animation (zoom-into-eye)
+
+* **Goal**: On mode toggle, play a **2.2s transformation** overlay that **zooms from full head → left eye** while applying glitch/energy effects, then swap themes.
+* **Implementation**:
+
+  * Add `<div id="transformOverlay">` fixed, full-viewport, with three layers: `glitch`, `energy`, `sprite`.
+  * **Sprites**: Use Base64 sprite sheets (provided via `sprites.js`). One sheet contains **9 frames** (100%, 110%, 125%, 145%, 170%, 200%, 240%, 300%, 380%) to simulate zoom. Another sheet contains **energy ring** (12 frames).
+  * **CSS** uses `will-change: transform, opacity;`
+  * **JS** `playTransformation(nextMode)`:
+
+    1. freeze scroll, show overlay;
+    2. step sprite frame every `~90ms` (11 FPS) for eye zoom;
+    3. stagger energy/glitch keyframes;
+    4. at `t=1.4s` switch theme token `data-mode="ghoul|human"`;
+    5. fade overlay out and unfreeze.
+
+**Sprite frame stepping (pseudo)**:
+
+```js
+function playSheet(el, frames, w, h, fps=11) {
+  let i = 0; const ms = 1000 / fps;
+  return new Promise(res => {
+    const id = setInterval(() => {
+      el.style.backgroundPosition = `-${(i%frames)*w}px 0`;
+      if (++i >= frames) { clearInterval(id); res(); }
+    }, ms);
+  });
+}
+```
+
+---
+
+## 6) RC economy (client-side, capped)
+
+* Complete task: +1..5 RC (configurable; capped by rules).
+* Pomodoro work session: +3 RC (once per session end).
+* AI battle win: +5 RC (client-side only; mark last award time to avoid spam).
+* All increments use RTDB `runTransaction` to avoid lost updates.
+
+---
+
+## 7) Pages—core behaviors
+
+**index.html**
+
+* Forms: login, signup, **guest**.
+* On auth, redirect to `/dashboard.html`.
+
+**dashboard.html**
+
+* Task CRUD + RC meter.
+* Pomodoro with work/rest inputs; award RC when work ends.
+* Quotes panel (random Kaneki quotes).
+* Mode toggle button triggers `playTransformation()`.
+
+**journal.html**
+
+* Only accessible; if `mode != 'ghoul'`, show entry-locked screen prompting switch.
+* Mood dropdown, textarea with **glitch typing** (CSS text-shadow jitter + JS occasional character swaps).
+* Save to `/journals/{uid}/{entryId}` with `visibility:"ghoul"`.
+
+**battle.html**
+
+* Single-player AI: stats HP/ATK/DEF/SPEED.
+* Turn order by SPEED; damage = `max(1, ATK - 0.5*DEF) * rand(0.9..1.1)`.
+* On win, award +5 RC with cooldown.
+* Minimal history to `/battles/{uid}/lastAI`.
+
+**profile.html**
+
+* DisplayName edit, avatar upload as Base64 (string length limit), mode preference, stats.
+
+---
+
+## 8) Base64 sprites & wiring
+
+Create `/assets/js/sprites.js` exporting constants:
+
+```js
+// Example (placeholders): replace with your Base64 strings
+export const SPRITE_EYE_ZOOM = {
+  // sheet 9 frames in one row, each cell 512x512
+  base64: "data:image/png;base64,AAAA...==",
+  cellW: 512, cellH: 512, frames: 9
+};
+export const SPRITE_RING = {
+  base64: "data:image/png;base64,BBBB...==",
+  cellW: 384, cellH: 384, frames: 12
+};
+```
+
+In `/assets/js/transform.js`, read these and set `backgroundImage`.
+
+---
+
+## 9) Mode system
+
+* `data-mode="human|ghoul"` on `<html>`; persist in `localStorage.blackreaper_mode`.
+* Inactivity tracker: if idle > 5 min and current is `human`, show 10s overlay countdown then call `playTransformation('ghoul')` unless canceled.
+
+---
+
+## 10) Ten implementation tasks (deliver sequentially)
+
+### Task 1 — Boot & Firebase
+
+**Deliver:** `index.html`, `/firebase/config.js`, `/assets/js/app.js`, `/assets/js/auth.js`, `/assets/js/db.js`.
+**Accept:** Can log in with email or as guest; on success redirect to `/dashboard.html`.
+
+### Task 2 — Themes & Layout
+
+**Deliver:** `/assets/css/base.css`, `theme.css`, `components.css`, `/assets/js/mode.js`.
+**Accept:** Manual toggle persists; base layout responsive.
+
+### Task 3 — Transformation Overlay + Sprites API
+
+**Deliver:** `/assets/js/sprites.js`, `/assets/js/transform.js`, CSS overlay with keyframes for glitch/energy; HTML overlay on all pages.
+**Accept:** Calling `playTransformation('ghoul')` animates and switches theme smoothly within \~2.2s.
+
+### Task 4 — Dashboard: Tasks + RC meter
+
+**Deliver:** `/assets/js/tasks.js`; UI to add/edit/delete/complete tasks; RC meter component.
+**Accept:** Completing a task increases RC (1–5) via RTDB transaction.
+
+### Task 5 — Pomodoro
+
+**Deliver:** `/assets/js/pomodoro.js`; simple timer UI.
+**Accept:** Completing a work session awards +3 RC (once per session).
+
+### Task 6 — Quotes + Corrupted Thought
+
+**Deliver:** `/assets/js/quotes.js`.
+**Accept:** Human: clean quotes; Ghoul: corrupted generator (random glyph swaps).
+
+### Task 7 — Journal (Ghoul-only)
+
+**Deliver:** `journal.html`, `/assets/js/journal.js`.
+**Accept:** Entries save/read under `/journals/{uid}`; blocked unless in Ghoul mode.
+
+### Task 8 — Ghoul Chat + Presence
+
+**Deliver:** `/assets/js/chat.js`.
+**Accept:** Messages appear realtime; presence updates `/presence/{uid}` with onDisconnect.
+
+### Task 9 — AI Battle
+
+**Deliver:** `battle.html`, `/assets/js/battle.js`.
+**Accept:** Turn-based fight; on win, +5 RC with cooldown; history saved.
+
+### Task 10 — Profile & Polishing
+
+**Deliver:** `profile.html`; avatar Base64 (size limit), display name edit, stats.
+**Accept:** Mode preference saved; all pages mobile-ready; Lighthouse ≥ 90 performance.
+
+---
+
+## 11) Key JS utilities (spec)
+
+* `txUpdate(path, fn)` → RTDB transaction wrapper.
+* `awardRC(uid, amount, reason)` → caps & cooldowns client-side.
+* `guardAuth()` → redirects unauthenticated users to `/index.html`.
+* `applyMode(mode)` → sets `data-mode`, saves localStorage, updates UI.
+
+---
+
+## 12) CSS theming tokens (example)
+
+```css
+:root {
+  --bg: #ffffff; --fg:#121212; --accent:#E94B3C; --muted:#6b7280;
+  --card:#f8f8f8; --ring:#e5e7eb; --radius:14px;
+}
+:root[data-mode="ghoul"] {
+  --bg:#0b0b0b; --fg:#e6e6e6; --accent:#8b0000; --card:#121212; --ring:#1f2937;
+}
+```
+
+---
+
+## 13) How to run
+
+* Include `<script type="module" src="/assets/js/app.js"></script>` on every page.
+* Use Firebase Hosting for deployment; no build step required.
+* Ensure rules are deployed; enable Email/Password + Anonymous in console.
+
+---
+
+## 14) What to return
+
+Provide **all HTML/CSS/JS files’ full contents** with correct imports and minimal inline comments. Include two placeholder Base64 sprite sheets (eye zoom 9-frames, energy ring 12-frames). Make sure each task’s output is runnable and doesn’t break previous tasks.
+
+---

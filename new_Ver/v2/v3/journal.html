@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="human">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>BlackReaper • Journal</title>
+  <link rel="stylesheet" href="/assets/css/theme.css"/>
+  <link rel="stylesheet" href="/assets/css/base.css"/>
+  <link rel="stylesheet" href="/assets/css/components.css"/>
+  <style>
+    header.app { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; gap:1rem; position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--ring); z-index:10; }
+    main { padding:1rem; display:grid; gap:1.25rem; max-width:820px; margin:0 auto; }
+    .entry-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.6rem; }
+    .entry { background:var(--card); border:1px solid var(--ring); padding:.7rem .8rem; border-radius:12px; display:flex; flex-direction:column; gap:.4rem; }
+    .entry small { opacity:.6; font-size:.6rem; }
+    #ghoulLock { text-align:center; padding:2.5rem 1rem; border:2px dashed var(--accent); border-radius:16px; }
+    textarea#journalText { min-height:140px; resize:vertical; font-family:var(--font-mono); font-size:.8rem; background:#121214; color:var(--fg); }
+    :root[data-mode="human"] textarea#journalText { background:#f9f9f9; }
+    .glitching { animation:j-glitch-shadow 250ms steps(2,end) infinite; }
+    @keyframes j-glitch-shadow { 0%{ text-shadow:2px 0 #ff0033, -2px 0 #00e5ff;} 50%{ text-shadow:-2px 0 #ff0033, 2px 0 #00e5ff;} 100%{ text-shadow:2px 0 #ff0033, -2px 0 #00e5ff;} }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <button id="modeToggle" aria-label="Switch mode" aria-pressed="false"><span class="icon" aria-hidden="true">🌓</span><span class="txt">Human</span></button>
+  <header class="app">
+    <strong>Journal</strong>
+    <nav class="row" style="gap:.5rem;">
+      <a href="/dashboard.html" class="sec" style="font-size:.65rem; padding:.4rem .6rem;">Dashboard</a>
+      <a href="/battle.html" class="sec" style="font-size:.65rem; padding:.4rem .6rem;">Battle</a>
+      <a href="/profile.html" class="sec" style="font-size:.65rem; padding:.4rem .6rem;">Profile</a>
+    </nav>
+  </header>
+  <main id="main">
+    <section id="ghoulLock" class="card" hidden>
+      <h2 style="margin:0;font-size:1rem;">Ghoul Only</h2>
+      <p style="margin:.4rem 0 0; font-size:.8rem;">Switch to Ghoul mode to access the journal.</p>
+      <button id="unlockSwitch" class="sec" type="button">Transform</button>
+    </section>
+    <section id="journalPanel" class="card" hidden>
+      <h2 style="margin:0;font-size:1rem;">New Entry</h2>
+      <form id="journalForm" class="stack" autocomplete="off" style="--space:.6rem;">
+        <div class="row" style="gap:.6rem; align-items:flex-end; flex-wrap:wrap;">
+          <label style="font-size:.65rem; display:flex; flex-direction:column; gap:.25rem;">Mood
+            <select id="moodSelect" required>
+              <option value="calm">calm</option>
+              <option value="angry">angry</option>
+              <option value="tired">tired</option>
+              <option value="empty">empty</option>
+            </select>
+          </label>
+          <button type="submit">Save</button>
+        </div>
+        <textarea id="journalText" placeholder="Let the ghoul speak..." required maxlength="2000"></textarea>
+      </form>
+    </section>
+    <section id="entriesPanel" class="card" hidden>
+      <h2 style="margin:0;font-size:1rem;">Entries</h2>
+      <ul id="entriesList" class="entry-list" aria-live="polite"></ul>
+    </section>
+    <section id="chatLock" class="card" hidden>
+      <h2 style="margin:0;font-size:1rem;">Ghoul Chat Locked</h2>
+      <p style="margin:.4rem 0 0;font-size:.8rem;">Switch to Ghoul to enter the chat.</p>
+    </section>
+    <section id="chatPanel" class="card" hidden>
+      <h2 style="margin:0;font-size:1rem;">Ghoul Chat</h2>
+      <div style="display:grid; gap:.6rem;">
+        <ul id="chatMessages" style="list-style:none;margin:0;padding:0;max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:.4rem;">
+        </ul>
+        <form id="chatForm" class="row" style="gap:.5rem;">
+          <input id="chatInput" placeholder="Send a message" maxlength="500" style="flex:1;" required />
+          <button type="submit">Send</button>
+        </form>
+        <div>
+          <small style="opacity:.6;">Online:</small>
+          <ul id="presenceList" style="display:flex;flex-wrap:wrap;gap:.4rem;list-style:none;margin:.3rem 0 0;padding:0;font-size:.6rem;"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/journal.js"></script>
+  <script type="module" src="/assets/js/chat.js"></script>
+</body>
+</html>

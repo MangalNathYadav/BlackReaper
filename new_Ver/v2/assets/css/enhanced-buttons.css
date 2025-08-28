@@ -1,0 +1,296 @@
+/* 
+   Enhanced Button Styles for BlackReaper v2
+   Includes animations and effects for auth buttons and mode toggle
+*/
+
+/* Mode Toggle Button Styles */
+.mode-toggle-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.mode-toggle {
+    position: relative;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.mode-toggle:hover {
+    background: rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.mode-toggle-container {
+    position: relative;
+    width: 160px;
+    height: 45px;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.mode-toggle-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, var(--human-primary), var(--human-danger));
+    opacity: 0.1;
+    transition: opacity 0.3s ease;
+}
+
+.ghoul-mode .mode-toggle-background {
+    background: linear-gradient(to right, var(--ghoul-danger), var(--rc-cells-color));
+    opacity: 0.2;
+}
+
+.mode-toggle-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    pointer-events: none;
+}
+
+.mode-toggle-icons > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.mode-toggle-icons i {
+    font-size: 16px;
+}
+
+.mode-toggle-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 6px);
+    height: calc(100% - 6px);
+    background: var(--card-bg);
+    border-radius: 20px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ghoul-mode .mode-toggle-slider {
+    transform: translateX(calc(100% + 6px));
+}
+
+.mode-toggle-knob {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.ghoul-mode .mode-toggle-knob {
+    color: var(--rc-cells-color);
+}
+
+/* Enhanced Auth Button Styles */
+.auth-btn {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    padding: 14px 24px;
+    font-size: var(--font-md);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.auth-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.auth-btn:hover::before {
+    left: 100%;
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(var(--primary-color-rgb), 0.3);
+    filter: brightness(1.1);
+}
+
+.auth-btn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+
+.auth-btn.secondary {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    backdrop-filter: blur(5px);
+}
+
+.auth-btn.secondary:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 5px 15px rgba(var(--primary-color-rgb), 0.1);
+    background: rgba(var(--primary-color-rgb), 0.05);
+}
+
+/* Ghoul Mode Button Styles */
+.ghoul-mode .auth-btn {
+    background: linear-gradient(135deg, var(--rc-cells-color), var(--danger-color));
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.ghoul-mode .auth-btn:hover {
+    box-shadow: 0 5px 15px rgba(var(--rc-cells-color-rgb), 0.3),
+                0 0 30px rgba(var(--rc-cells-color-rgb), 0.2);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.ghoul-mode .auth-btn.secondary {
+    border-color: rgba(var(--rc-cells-color-rgb), 0.5);
+    color: var(--rc-cells-color);
+    text-shadow: 0 0 5px rgba(var(--rc-cells-color-rgb), 0.5);
+    background: rgba(var(--rc-cells-color-rgb), 0.05);
+}
+
+.ghoul-mode .auth-btn.secondary:hover {
+    border-color: var(--rc-cells-color);
+    background: rgba(var(--rc-cells-color-rgb), 0.1);
+    box-shadow: 0 5px 15px rgba(var(--rc-cells-color-rgb), 0.15),
+                0 0 30px rgba(var(--rc-cells-color-rgb), 0.1);
+    text-shadow: 0 0 8px rgba(var(--rc-cells-color-rgb), 0.8);
+}
+
+.ghoul-mode .auth-btn i {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+/* Add special pulsing effect for guest login in ghoul mode */
+.ghoul-mode #guest-login {
+    animation: guest-button-pulse 2s infinite;
+}
+
+@keyframes guest-button-pulse {
+    0% {
+        border-color: rgba(var(--rc-cells-color-rgb), 0.5);
+        box-shadow: 0 0 0 rgba(var(--rc-cells-color-rgb), 0.1);
+    }
+    50% {
+        border-color: rgba(var(--rc-cells-color-rgb), 0.8);
+        box-shadow: 0 0 20px rgba(var(--rc-cells-color-rgb), 0.2);
+    }
+    100% {
+        border-color: rgba(var(--rc-cells-color-rgb), 0.5);
+        box-shadow: 0 0 0 rgba(var(--rc-cells-color-rgb), 0.1);
+    }
+}
+
+/* Button Ripple Effect */
+.auth-btn .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Form Group Button Container */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .form-actions {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .form-actions .auth-btn {
+        width: calc(50% - 6px);
+        margin-bottom: 0;
+    }
+}
+
+/* Loading State */
+.auth-btn.loading {
+    position: relative;
+    pointer-events: none;
+    color: transparent;
+}
+
+.auth-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: button-loading-spinner 0.6s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}

@@ -4,176 +4,1793 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BlackReaper | Profile</title>
-    <link rel="stylesheet" href="assets/css/profile.css">
-    <link rel="icon" type="image/png" href="assets/images/mask.png">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    
+    <!-- Internal CSS for Profile -->
+    <style>
+        /* General Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all var(--transition-normal);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-color);
+            border-right: 1px solid var(--border-color);
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            transition: all var(--transition-normal);
+        }
+
+        .sidebar-header {
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--space-md);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 0 var(--space-md) 0;
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .rc-cells {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 auto 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 5px;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            padding: var(--space-md);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-normal);
+        }
+        
+        .nav-links li.active {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        .nav-links li.active a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-links li:hover:not(.active) {
+            background-color: var(--bg-light);
+        }
+        
+        .nav-links li:hover:not(.active) a {
+            transform: translateX(5px);
+        }
+        
+        .icon {
+            margin-right: var(--space-md);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mode Toggle in Sidebar */
+        /* Mode Toggle Styles - Matching Login Page */
+        .mode-toggle-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md) 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .mode-toggle {
+            position: relative;
+            width: 140px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-toggle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mode-toggle-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, 
+                var(--bg-color), 
+                var(--bg-color) 50%, 
+                var(--ghoul-primary) 50%, 
+                var(--ghoul-primary)
+            );
+            opacity: 0.1;
+        }
+        
+        .mode-toggle-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1;
+        }
+        
+        .human-icon, .ghoul-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            height: 100%;
+            width: 50%;
+        }
+        
+        .human-icon i, .ghoul-icon i {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        
+        .human-icon {
+            color: var(--primary-color);
+        }
+        
+        .ghoul-icon {
+            color: var(--ghoul-primary);
+            opacity: 0.5;
+        }
+        
+        .mode-toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .mode-toggle-knob {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 70px;
+            height: 30px;
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .mode-icon-active {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        /* Animation for toggle knob */
+        @keyframes pulse-knob {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 5px rgba(var(--primary-color-rgb), 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0);
+            }
+        }
+        
+        /* Animation for toggle rotation */
+        @keyframes rotate-icon {
+            0% { transform: translateX(0) rotate(0); }
+            50% { transform: translateX(33px) rotate(180deg); }
+            100% { transform: translateX(66px) rotate(360deg); }
+        }
+
+        #logout-btn {
+            margin-top: var(--space-md);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: var(--space-lg);
+            transition: all var(--transition-normal);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-color-light);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+
+        .datetime-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+
+        #current-date {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        #current-time {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Profile Specific Styles */
+        .profile-container {
+            display: grid;
+            grid-template-columns: minmax(300px, 1fr) 2fr;
+            gap: var(--space-lg);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 992px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: var(--space-lg);
+        }
+
+        /* Profile Card Styles */
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: var(--space-xl) var(--space-lg);
+            background: linear-gradient(to bottom, rgba(var(--primary-color-rgb), 0.1), transparent);
+            position: relative;
+        }
+
+        .profile-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border-color), transparent);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--bg-light);
+            overflow: hidden;
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary-color);
+            border: 4px solid var(--bg-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-edit-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all var(--transition-fast);
+        }
+
+        .avatar-edit-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            margin: var(--space-xs) 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .profile-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 10px rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .profile-status.ghoul {
+            background: linear-gradient(to right, #d32f2f, #9c27b0);
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: var(--space-lg) 0;
+            padding: 0 var(--space-md);
+        }
+
+        .stat-mini {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-mini-label {
+            font-size: 0.75rem;
+            color: var(--text-color-light);
+            margin-top: 3px;
+        }
+
+        .profile-details {
+            padding: 0 var(--space-lg) var(--space-lg);
+        }
+
+        .detail-item {
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--text-color-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .profile-actions {
+            padding: var(--space-lg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            background-color: var(--bg-light);
+        }
+
+        /* Stats Card Styles */
+        .stats-card .card-body {
+            padding: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1px;
+            background-color: var(--border-color);
+        }
+
+        .stat-item {
+            background-color: var(--bg-color);
+            padding: var(--space-lg) var(--space-md);
+            text-align: center;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+            transform: scaleX(0);
+            transition: transform var(--transition-fast);
+        }
+
+        .stat-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-sm);
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-color-light);
+        }
+
+        /* Achievement Section */
+        .achievement-section {
+            margin-top: var(--space-xl);
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .achievement {
+            background-color: var(--bg-color);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+        }
+
+        .achievement:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .achievement-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .achievement.unlocked .achievement-icon {
+            background-color: rgba(var(--success-color-rgb), 0.1);
+            color: var(--success-color);
+        }
+
+        .achievement.locked .achievement-icon {
+            background-color: rgba(var(--border-color-rgb), 0.2);
+            color: var(--text-color-light);
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-info h4 {
+            margin: 0 0 5px 0;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .achievement-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+        }
+
+        .achievement-progress {
+            margin-top: var(--space-sm);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: rgba(var(--border-color-rgb), 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            margin-top: 3px;
+            color: var(--text-color-light);
+        }
+
+        /* Tabs Section */
+        .tabs-container {
+            margin-top: var(--space-xl);
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--space-md);
+        }
+
+        .tab-btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: none;
+            background: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-color-light);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform var(--transition-fast);
+        }
+
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--text-color);
+        }
+
+        .activity-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-color-light);
+            white-space: nowrap;
+        }
+
+        /* Edit Profile Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            max-width: 90%;
+            width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modalAppear 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), transparent);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-color-light);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-md);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: inherit;
+            transition: all var(--transition-fast);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: var(--space-md) 0;
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: var(--space-md);
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            position: relative;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-controls {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-light);
+            color: var(--text-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn.secondary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn.danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+        }
+
+        /* Theme specific styles for Ghoul Mode */
+        body.ghoul-mode {
+            --bg-color: #1a1a1a;
+            --bg-light: #2a2a2a;
+            --text-color: #e0e0e0;
+            --text-color-light: #a0a0a0;
+            --border-color: #3a3a3a;
+            --border-color-rgb: 58, 58, 58;
+            --primary-color: #d32f2f;
+            --primary-color-rgb: 211, 47, 47;
+            --accent-color: #9c27b0;
+            --accent-color-rgb: 156, 39, 176;
+        }
+
+        body.ghoul-mode .profile-status.ghoul {
+            animation: pulse 2s infinite;
+        }
+
+        body.ghoul-mode .stat-icon {
+            background-color: rgba(211, 47, 47, 0.2);
+        }
+
+        body.ghoul-mode .progress-fill {
+            background: linear-gradient(90deg, #d32f2f, #9c27b0);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: var(--space-md);
+                left: var(--space-md);
+                z-index: 1000;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: var(--primary-color);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                cursor: pointer;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+            
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Nav bar -->
-    <nav class="navbar">
-        <div class="nav-logo">
-            <img src="assets/images/mask.png" alt="Kaneki Mask" class="mini-mask">
-            <span>BlackReaper</span>
+    <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <div class="menu-toggle" id="menu-toggle" style="display: none;">
+            <i class="fas fa-bars"></i>
         </div>
-        <ul class="nav-links">
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="journal.html">Journal</a></li>
-            <li><a href="profile.html" class="active">Profile</a></li>
-            <li><a href="stats.html">Stats</a></li>
-        </ul>
-        <div class="nav-actions">
-            <div class="mode-toggle">
-                <span>Human</span>
-                <label class="switch">
-                    <input type="checkbox" id="mode-toggle">
-                    <span class="slider"></span>
-                </label>
-                <span>Ghoul</span>
+        
+        <!-- Sidebar/Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="user-info">
+                    <span class="user-name" id="sidebar-user-name">Loading...</span>
+                    <span class="rc-cells"><i class="fas fa-dna"></i> <span id="rc-cell-count">0</span> RC</span>
+                </div>
             </div>
-            <button id="logout-btn">Logout</button>
-        </div>
-    </nav>
 
-    <div class="container profile-container">
-        <div class="profile-header">
-            <div class="profile-avatar">
-                <img id="user-avatar" src="assets/images/mask.png" alt="User Avatar">
-                <div class="upload-overlay">
-                    <label for="avatar-upload" class="upload-btn">
-                        <i class="fas fa-camera"></i> Change Photo
-                    </label>
-                    <input type="file" id="avatar-upload" accept="image/*" hidden>
-                </div>
-            </div>
-            
-            <div class="profile-info">
-                <h1 id="profile-nickname">User</h1>
-                <div class="threat-level">
-                    <span><i class="fas fa-exclamation-triangle"></i> Threat Level:</span>
-                    <div class="threat-meter" data-level="S">
-                        <span class="threat-value">S</span>
-                    </div>
-                </div>
-                <p class="user-status" id="user-status">
-                    <i class="fas fa-clock"></i> Active for <span id="days-active">0</span> days
-                </p>
-            </div>
-        </div>
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard.html">
+                        <span class="icon"><i class="fas fa-home"></i></span>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="journal.html">
+                        <span class="icon"><i class="fas fa-book"></i></span>
+                        Journal
+                    </a>
+                </li>
+                <li>
+                    <a href="battle.html">
+                        <span class="icon"><i class="fas fa-fist-raised"></i></span>
+                        Battle
+                    </a>
+                </li>
+                <li>
+                    <a href="stats.html">
+                        <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                        Stats
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="profile.html">
+                        <span class="icon"><i class="fas fa-user"></i></span>
+                        Profile
+                    </a>
+                </li>
+            </ul>
 
-        <div class="profile-content">
-            <div class="profile-section">
-                <h2>Kagune Unlocks</h2>
-                <div class="kagune-progress">
-                    <div class="kagune-type unlocked" data-type="rinkaku">
-                        <span class="kagune-name">
-                            Rinkaku
-                            <span class="progress-percentage">100%</span>
-                        </span>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 100%;"></div>
+            <div class="mode-toggle-wrapper">
+                <div class="mode-toggle" id="mode-toggle-btn">
+                    <div class="mode-toggle-container">
+                        <div class="mode-toggle-background"></div>
+                        <div class="mode-toggle-icons">
+                            <div class="human-icon">
+                                <i class="fas fa-user"></i>
+                                <span>Human</span>
+                            </div>
+                            <div class="ghoul-icon">
+                                <i class="fas fa-mask"></i>
+                                <span>Ghoul</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="kagune-type" data-type="ukaku">
-                        <span class="kagune-name">
-                            Ukaku
-                            <span class="progress-percentage">45%</span>
-                        </span>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 45%;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="kagune-type" data-type="koukaku">
-                        <span class="kagune-name">
-                            Koukaku
-                            <span class="progress-percentage">10%</span>
-                        </span>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 10%;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="kagune-type locked" data-type="bikaku">
-                        <span class="kagune-name">
-                            Bikaku
-                            <span class="progress-percentage">0%</span>
-                        </span>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 0%;"></div>
+                        <div class="mode-toggle-slider">
+                            <div class="mode-toggle-knob">
+                                <div class="mode-icon-active">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="profile-section">
-                <h2>Statistics</h2>
-                <div class="stats-container">
-                    <div class="stat-item">
-                        <span class="stat-label">Tasks Completed</span>
-                        <span class="stat-value" id="tasks-completed">0</span>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Journal Entries</span>
-                        <span class="stat-value" id="journal-count">0</span>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Ghoul Mode Time</span>
-                        <span class="stat-value" id="ghoul-time">0 hrs</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="profile-section">
-                <h2>Account Settings</h2>
-                <div class="settings-form">
-                    <div class="form-group">
-                        <label for="edit-nickname"><i class="fas fa-user"></i> Nickname</label>
-                        <input type="text" id="edit-nickname" value="User">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="edit-email"><i class="fas fa-envelope"></i> Email</label>
-                        <input type="email" id="edit-email" value="user@example.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="form-actions">
-                            <button id="update-profile"><i class="fas fa-save"></i> Update Profile</button>
-                            <button id="change-password"><i class="fas fa-key"></i> Change Password</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Audio Controls -->
-        <div class="audio-controls">
-            <button id="toggle-audio">
-                <span class="audio-on">🔊</span>
-                <span class="audio-off hidden">🔇</span>
+            <button id="logout-btn" class="btn danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
             </button>
-            <audio id="background-audio" loop>
-                <source src="assets/audio/background.mp3" type="audio/mp3">
-            </audio>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title">
+                    <h2><i class="fas fa-user-circle"></i> Profile</h2>
+                    <span class="subtitle">Manage your personal settings and view your progress</span>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-display">
+                        <span id="current-date">Loading date...</span>
+                        <span id="current-time">Loading time...</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="profile-container" id="profile-container">
+                <!-- Profile Info Card -->
+                <div class="card profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profile-avatar">
+                            <img src="assets/images/placeholder-frame.png" alt="Profile Avatar">
+                            <div class="avatar-edit-icon" id="change-avatar-btn">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <h3 class="profile-name" id="profile-name">Loading...</h3>
+                        <span class="profile-status" id="profile-status"><i class="fas fa-user"></i> Human</span>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-mini">
+                                <div class="stat-mini-value" id="stat-mini-rank">D</div>
+                                <div class="stat-mini-label">Rank</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-value" id="stat-mini-rc">0</div>
+                                <div class="stat-mini-label">RC</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-value" id="stat-mini-streak">0</div>
+                                <div class="stat-mini-label">Day Streak</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-id-card"></i> Account Type</span>
+                            <span class="detail-value" id="account-type">Standard</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-envelope"></i> Email</span>
+                            <span class="detail-value" id="profile-email">example@email.com</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-dna"></i> RC Cell Level</span>
+                            <span class="detail-value" id="rc-level">0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label"><i class="fas fa-calendar-alt"></i> Joined</span>
+                            <span class="detail-value" id="join-date">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button id="edit-profile-btn" class="btn primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button id="kagune-settings-btn" class="btn secondary">
+                            <i class="fas fa-cog"></i> Kagune Settings
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stats and Activities Card -->
+                <div class="card stats-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Performance &amp; Activity</h3>
+                        <div class="card-actions">
+                            <button class="btn btn-sm btn-icon" id="refresh-stats">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="stat-value" id="stat-tasks">0</div>
+                                <div class="stat-label">Tasks Completed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-value" id="stat-pomodoros">0</div>
+                                <div class="stat-label">Pomodoros</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="stat-value" id="stat-journals">0</div>
+                                <div class="stat-label">Journal Entries</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="stat-value" id="stat-battles-won">0</div>
+                                <div class="stat-label">Battles Won</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <div class="stat-value" id="stat-focus-time">0h</div>
+                                <div class="stat-label">Focus Time</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stat-value" id="stat-active-days">0</div>
+                                <div class="stat-label">Active Days</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tabs for Activity & More -->
+                        <div class="tabs-container">
+                            <div class="tabs-header">
+                                <button class="tab-btn active" data-tab="activity">Recent Activity</button>
+                                <button class="tab-btn" data-tab="achievements">Achievements</button>
+                                <button class="tab-btn" data-tab="settings">Settings</button>
+                            </div>
+                            
+                            <!-- Activity Tab -->
+                            <div class="tab-content active" id="activity-tab">
+                                <div class="activity-feed">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Completed a pomodoro session</div>
+                                            <div class="activity-subtitle">25 minutes of focused work</div>
+                                        </div>
+                                        <div class="activity-time">2h ago</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Won battle against Rize</div>
+                                            <div class="activity-subtitle">Earned 50 RC cells</div>
+                                        </div>
+                                        <div class="activity-time">5h ago</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Added a journal entry</div>
+                                            <div class="activity-subtitle">Daily reflection complete</div>
+                                        </div>
+                                        <div class="activity-time">Yesterday</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-tasks"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Completed 3 tasks</div>
+                                            <div class="activity-subtitle">Productivity streak continues!</div>
+                                        </div>
+                                        <div class="activity-time">2 days ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Achievements Tab -->
+                            <div class="tab-content" id="achievements-tab">
+                                <div class="achievement-grid">
+                                    <div class="achievement unlocked">
+                                        <div class="achievement-icon">
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <div class="achievement-info">
+                                            <h4>First Steps</h4>
+                                            <p>Complete your first task</p>
+                                        </div>
+                                    </div>
+                                    <div class="achievement unlocked">
+                                        <div class="achievement-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="achievement-info">
+                                            <h4>Time Keeper</h4>
+                                            <p>Complete 10 pomodoro sessions</p>
+                                        </div>
+                                    </div>
+                                    <div class="achievement locked">
+                                        <div class="achievement-icon">
+                                            <i class="fas fa-fist-raised"></i>
+                                        </div>
+                                        <div class="achievement-info">
+                                            <h4>Battle Master</h4>
+                                            <p>Win 25 battles</p>
+                                            <div class="achievement-progress">
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" style="width: 20%"></div>
+                                                </div>
+                                                <div class="progress-text">
+                                                    <span>5/25</span>
+                                                    <span>20%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="achievement locked">
+                                        <div class="achievement-icon">
+                                            <i class="fas fa-fire"></i>
+                                        </div>
+                                        <div class="achievement-info">
+                                            <h4>On Fire</h4>
+                                            <p>Maintain a 7-day streak</p>
+                                            <div class="achievement-progress">
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" style="width: 43%"></div>
+                                                </div>
+                                                <div class="progress-text">
+                                                    <span>3/7</span>
+                                                    <span>43%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Settings Tab -->
+                            <div class="tab-content" id="settings-tab">
+                                <div class="settings-form">
+                                    <div class="form-group">
+                                        <label for="notification-setting">Notification Settings</label>
+                                        <select id="notification-setting" class="form-control">
+                                            <option value="all">All Notifications</option>
+                                            <option value="important">Important Only</option>
+                                            <option value="none">None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Privacy Settings</label>
+                                        <div class="checkbox-group">
+                                            <label>
+                                                <input type="checkbox" checked> Share statistics publicly
+                                            </label>
+                                        </div>
+                                        <div class="checkbox-group">
+                                            <label>
+                                                <input type="checkbox" checked> Show online status
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Danger Zone</label>
+                                        <button class="btn danger btn-sm">Reset Progress</button>
+                                        <button class="btn danger btn-sm">Delete Account</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit Profile Modal -->
+            <div class="modal" id="edit-profile-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user-edit"></i> Edit Profile</h3>
+                        <button class="close-modal" id="close-edit-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="edit-profile-form">
+                        <div class="avatar-upload">
+                            <div class="avatar-preview" id="avatar-preview">
+                                <img src="assets/images/default-avatar.png" alt="Avatar Preview">
+                            </div>
+                            <div class="avatar-controls">
+                                <button type="button" class="btn btn-sm" id="upload-avatar">
+                                    <i class="fas fa-upload"></i> Upload
+                                </button>
+                                <input type="file" id="edit-avatar" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-name">Display Name</label>
+                                <input type="text" id="edit-name" class="form-control" placeholder="Your display name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-status">Status</label>
+                                <select id="edit-status" class="form-control">
+                                    <option value="active">Active</option>
+                                    <option value="busy">Busy</option>
+                                    <option value="away">Away</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-bio">Bio</label>
+                            <textarea id="edit-bio" class="form-control" rows="3" placeholder="Tell others about yourself..."></textarea>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" id="cancel-edit" class="btn secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Kagune Settings Modal -->
+            <div class="modal" id="kagune-settings-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-dna"></i> Kagune Settings</h3>
+                        <button class="close-modal" id="close-kagune-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="kagune-settings-content">
+                        <div class="kagune-type-selector">
+                            <h4>Select Your Kagune Type</h4>
+                            <div class="kagune-options">
+                                <div class="kagune-option selected" data-type="rinkaku">
+                                    <div class="kagune-icon">
+                                        <i class="fas fa-khanda"></i>
+                                    </div>
+                                    <div class="kagune-name">Rinkaku</div>
+                                    <div class="kagune-stats">
+                                        <span>ATK: High</span>
+                                        <span>DEF: Medium</span>
+                                    </div>
+                                </div>
+                                <div class="kagune-option" data-type="ukaku">
+                                    <div class="kagune-icon">
+                                        <i class="fas fa-feather-alt"></i>
+                                    </div>
+                                    <div class="kagune-name">Ukaku</div>
+                                    <div class="kagune-stats">
+                                        <span>SPD: High</span>
+                                        <span>DEF: Low</span>
+                                    </div>
+                                </div>
+                                <div class="kagune-option" data-type="koukaku">
+                                    <div class="kagune-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="kagune-name">Koukaku</div>
+                                    <div class="kagune-stats">
+                                        <span>DEF: High</span>
+                                        <span>SPD: Low</span>
+                                    </div>
+                                </div>
+                                <div class="kagune-option" data-type="bikaku">
+                                    <div class="kagune-icon">
+                                        <i class="fas fa-bolt"></i>
+                                    </div>
+                                    <div class="kagune-name">Bikaku</div>
+                                    <div class="kagune-stats">
+                                        <span>Balanced</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancel-kagune-settings" class="btn secondary">Cancel</button>
+                            <button id="save-kagune-settings" class="btn primary">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Inactivity Warning Modal -->
+    <div class="modal" id="inactivity-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Ghoul Mode Activating...</h3>
+            </div>
+            <div class="modal-body">
+                <div class="countdown-container">
+                    <div class="countdown-ring">
+                        <svg>
+                            <circle r="40" cx="50" cy="50"></circle>
+                            <circle r="40" cx="50" cy="50" id="countdown-circle"></circle>
+                        </svg>
+                        <span id="inactivity-countdown">30</span>
+                    </div>
+                </div>
+                <p>Your human form is weakening due to inactivity. Ghoul mode will activate soon...</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-mode-switch" class="btn primary"><i class="fas fa-hand-paper"></i> Stay Human</button>
+                <button id="accept-mode-switch" class="btn danger"><i class="fas fa-check"></i> Embrace Ghoul</button>
+            </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Firebase Scripts -->
     <script src="firebase/config.js"></script>
     <script src="firebase/auth.js"></script>
     <script src="firebase/database.js"></script>
-    <script src="assets/js/notifications.js"></script>
-    <script src="assets/js/kagune.js"></script>
-    <script src="assets/js/analytics.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/profile.js"></script>
+    
+    <!-- Date and Time Script -->
+    <script>
+        // Update the current date and time
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format date: Weekday, Month Day, Year
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            
+            // Format time: Hours:Minutes:Seconds AM/PM
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Update the elements
+            document.getElementById('current-date').textContent = dateStr;
+            document.getElementById('current-time').textContent = timeStr;
+        }
+        
+        // Update time immediately and then every second
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        // Mode toggle functionality using the login page style toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const modeToggleBtn = document.getElementById('mode-toggle-btn');
+            const body = document.body;
+            
+            // Check if there's a saved preference, default to 'human' mode
+            const savedMode = localStorage.getItem('theme-mode') || 'human';
+            
+            // Set initial theme
+            if (savedMode === 'ghoul') {
+                body.className = 'ghoul-mode';
+                if (modeToggleBtn) {
+                    updateToggleUI('ghoul');
+                }
+            } else {
+                body.className = 'human-mode';
+                if (modeToggleBtn) {
+                    updateToggleUI('human');
+                }
+                localStorage.setItem('theme-mode', 'human');
+            }
+            
+            // Add click event to toggle button
+            if (modeToggleBtn) {
+                modeToggleBtn.addEventListener('click', function() {
+                    // If toggleTheme is defined in main.js, use it, otherwise fallback
+                    if (typeof toggleTheme === 'function') {
+                        toggleTheme();
+                    } else {
+                        // Fallback toggle functionality
+                        const currentMode = body.classList.contains('ghoul-mode') ? 'ghoul' : 'human';
+                        const newMode = currentMode === 'ghoul' ? 'human' : 'ghoul';
+                        
+                        body.className = newMode === 'ghoul' ? 'ghoul-mode' : 'human-mode';
+                        localStorage.setItem('theme-mode', newMode);
+                        updateToggleUI(newMode);
+                    }
+                });
+            }
+            
+            // Helper function to update toggle UI based on mode
+            function updateToggleUI(mode) {
+                if (!modeToggleBtn) return;
+                
+                const knob = modeToggleBtn.querySelector('.mode-toggle-knob');
+                const iconActive = modeToggleBtn.querySelector('.mode-icon-active');
+                const humanIcon = modeToggleBtn.querySelector('.human-icon');
+                const ghoulIcon = modeToggleBtn.querySelector('.ghoul-icon');
+                
+                if (!knob || !iconActive || !humanIcon || !ghoulIcon) return;
+                
+                if (mode === 'ghoul') {
+                    knob.style.transform = 'translateX(66px)';
+                    iconActive.innerHTML = '<i class="fas fa-mask"></i>';
+                    humanIcon.style.opacity = '0.5';
+                    ghoulIcon.style.opacity = '1';
+                } else {
+                    knob.style.transform = 'translateX(0)';
+                    iconActive.innerHTML = '<i class="fas fa-user"></i>';
+                    humanIcon.style.opacity = '1';
+                    ghoulIcon.style.opacity = '0.5';
+                }
+            }
+            
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all tabs and buttons
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Add active class to current tab and button
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Handle avatar upload button click
+            const uploadAvatarBtn = document.getElementById('upload-avatar');
+            const editAvatarInput = document.getElementById('edit-avatar');
+            if (uploadAvatarBtn && editAvatarInput) {
+                uploadAvatarBtn.addEventListener('click', function() {
+                    editAvatarInput.click();
+                });
+            }
+            
+            // Show edit profile modal
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+            const editProfileModal = document.getElementById('edit-profile-modal');
+            const closeEditModal = document.getElementById('close-edit-modal');
+            const cancelEdit = document.getElementById('cancel-edit');
+            
+            if (editProfileBtn && editProfileModal) {
+                editProfileBtn.addEventListener('click', function() {
+                    editProfileModal.style.display = 'flex';
+                });
+                
+                if (closeEditModal) {
+                    closeEditModal.addEventListener('click', function() {
+                        editProfileModal.style.display = 'none';
+                    });
+                }
+                
+                if (cancelEdit) {
+                    cancelEdit.addEventListener('click', function() {
+                        editProfileModal.style.display = 'none';
+                    });
+                }
+            }
+            
+            // Show kagune settings modal
+            const kaguneSettingsBtn = document.getElementById('kagune-settings-btn');
+            const kaguneSettingsModal = document.getElementById('kagune-settings-modal');
+            const closeKaguneModal = document.getElementById('close-kagune-modal');
+            const cancelKaguneSettings = document.getElementById('cancel-kagune-settings');
+            
+            if (kaguneSettingsBtn && kaguneSettingsModal) {
+                kaguneSettingsBtn.addEventListener('click', function() {
+                    kaguneSettingsModal.style.display = 'flex';
+                });
+                
+                if (closeKaguneModal) {
+                    closeKaguneModal.addEventListener('click', function() {
+                        kaguneSettingsModal.style.display = 'none';
+                    });
+                }
+                
+                if (cancelKaguneSettings) {
+                    cancelKaguneSettings.addEventListener('click', function() {
+                        kaguneSettingsModal.style.display = 'none';
+                    });
+                }
+            }
+            
+            // Kagune type selection
+            const kaguneOptions = document.querySelectorAll('.kagune-option');
+            if (kaguneOptions) {
+                kaguneOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        // Remove selected class from all options
+                        kaguneOptions.forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        // Add selected class to clicked option
+                        this.classList.add('selected');
+                    });
+                });
+            }
+        });
+    </script>
+    <!-- Theme Animation Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="assets/js/ghoul-animation.js"></script>
+    <script src="assets/js/theme-animation-loader.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/profile.js"></script>
 </body>

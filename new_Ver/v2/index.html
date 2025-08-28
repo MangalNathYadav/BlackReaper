@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Login</title>
+    
+    <!-- PWA & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c2c2c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="assets/images/placeholder-frame.png">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth-forms.css">
+    <link rel="stylesheet" href="assets/css/background-patterns.css">
+    <link rel="stylesheet" href="assets/css/animation-frames.css">
+    <link rel="stylesheet" href="assets/css/form-fixes.css">
+    <link rel="stylesheet" href="assets/css/enhanced-buttons.css">
+    <link rel="stylesheet" href="assets/css/auth-tabs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK v9 (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    
+    <style>
+        /* Enhanced Background Design for Login Page */
+        body:before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, rgba(35, 35, 35, 0.9), rgba(15, 15, 15, 0.95));
+        }
+        
+        .background-design {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            opacity: 0.4;
+        }
+        
+        .background-design .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--primary-color);
+            filter: blur(60px);
+            opacity: 0.15;
+        }
+        
+        .background-design .circle:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+            animation: float 20s infinite alternate;
+        }
+        
+        .background-design .circle:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            right: -50px;
+            background: var(--accent-color);
+            animation: float 15s infinite alternate-reverse;
+        }
+        
+        .background-design .grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            transform: perspective(500px) rotateX(60deg);
+            animation: grid-move 25s linear infinite;
+        }
+        
+        body.ghoul-mode .background-design .circle:nth-child(1) {
+            background: var(--rc-cells-color);
+        }
+        
+        body.ghoul-mode .background-design .circle:nth-child(2) {
+            background: var(--danger-color);
+        }
+        
+        /* Animation styling moved to animation-frames.css */
+        
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(30px, 30px);
+            }
+        }
+        
+        @keyframes grid-move {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0);
+            }
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(20px);
+            }
+        }
+    </style>
+</head>
+<body class="human-mode">
+    <!-- Enhanced Background Design -->
+    <div class="background-design">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="grid"></div>
+    </div>
+    
+    <!-- Human to Ghoul Transformation Overlay -->
+    <div class="transformation-overlay" id="transformation-overlay">
+        <div class="frame-sequence" id="frame-sequence">
+            <!-- Frames will be dynamically loaded via JavaScript -->
+        </div>
+        <div class="animation-caption" id="animation-caption">Becoming Ghoul</div>
+    </div>
+    
+    <div class="mode-toggle-wrapper">
+        <div class="mode-toggle" id="mode-toggle-btn">
+            <div class="mode-toggle-container">
+                <div class="mode-toggle-background"></div>
+                <div class="mode-toggle-icons">
+                    <div class="human-icon">
+                        <i class="fas fa-user"></i>
+                        <span>Human</span>
+                    </div>
+                    <div class="ghoul-icon">
+                        <i class="fas fa-mask"></i>
+                        <span>Ghoul</span>
+                    </div>
+                </div>
+                <div class="mode-toggle-slider">
+                    <div class="mode-toggle-knob">
+                        <div class="mode-icon-active">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container auth-container">
+        <!-- Background Patterns -->
+        <div class="bg-pattern bg-pattern-rc-cells"></div>
+        <div class="bg-pattern bg-pattern-kagune"></div>
+        <div class="bg-pattern bg-pattern-overlay"></div>
+        
+        <header class="auth-header">
+            <div class="logo-container">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="logo-animation"></div>
+            </div>
+            <p class="tagline">Embrace your <span class="accent-text">Ghoul</span>, master your productivity</p>
+        </header>
+
+        <main class="auth-main">
+            <!-- Auth Card Container -->
+            <div class="auth-card">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="login-tab">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="auth-tab" id="signup-tab">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                    <div class="tab-slider"></div>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form active" id="login-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <div class="input-with-icon">
+                                <input type="email" id="login-email" placeholder="Your email" required>
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="input-with-icon">
+                                <input type="password" id="login-password" placeholder="Your password" required>
+                                <i class="fas fa-lock"></i>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="auth-btn">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                            <button type="button" class="auth-btn secondary" id="guest-login">
+                                <i class="fas fa-user-shield"></i> Continue as Guest
+                            </button>
+                        </div>
+                        <div class="auth-error" id="login-error"></div>
+                    </form>
+                </div>
+
+                <!-- Signup Form -->
+                <div class="auth-form" id="signup-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="signup-username">Username</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="signup-username" placeholder="Choose a username" required>
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <div class="input-with-icon">
+                                <input type="email" id="signup-email" placeholder="Your email" required>
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <div class="input-with-icon">
+                                <input type="password" id="signup-password" placeholder="Choose a password" required>
+                                <i class="fas fa-lock"></i>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <div class="input-with-icon">
+                                <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                                <i class="fas fa-lock"></i>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="auth-btn">
+                                <i class="fas fa-user-plus"></i> Create Account
+                            </button>
+                            <button type="button" class="auth-btn secondary" id="back-to-login">
+                                <i class="fas fa-arrow-left"></i> Back to Login
+                            </button>
+                        </div>
+                        <div class="auth-error" id="signup-error"></div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="auth-footer">
+            <p>&copy; 2025 BlackReaper. Inspired by Tokyo Ghoul.</p>
+            <div class="tokyo-divider"></div>
+            <div class="tokyo-quote">"The world is not wrong. It just is." — Kaneki Ken</div>
+        </footer>
+    </div>
+
+    <!-- Firebase Core -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    
+    <!-- Feature Modules -->
+    <script type="module" src="assets/js/notifications.js"></script>
+    <script type="module" src="assets/js/theme-animator.js"></script>
+    <script type="module" src="assets/js/service-worker-registration.js"></script>
+    
+    <!-- Main Script -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/background-patterns.js"></script>
+    <script src="assets/js/form-fixes.js"></script>
+    <script src="assets/js/transformation-animation.js"></script>
+    <script src="assets/js/button-enhancements.js"></script>
+    
+    <!-- UI Update Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update UI for the current theme mode
+            function updateModeToggleUI() {
+                const isGhoulMode = document.body.classList.contains('ghoul-mode');
+                const modeToggleKnob = document.querySelector('.mode-toggle-knob');
+                const modeIconActive = document.querySelector('.mode-icon-active');
+                
+                if (isGhoulMode) {
+                    modeToggleKnob.style.transform = 'translateX(100%)';
+                    modeIconActive.innerHTML = '<i class="fas fa-mask"></i>';
+                } else {
+                    modeToggleKnob.style.transform = 'translateX(0)';
+                    modeIconActive.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            }
+            
+            // Update UI on page load
+            updateModeToggleUI();
+        });
+    </script>
+</body>
+</html>

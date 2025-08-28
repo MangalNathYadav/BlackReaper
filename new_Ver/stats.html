@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Stats</title>
+    
+    <!-- PWA & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c2c2c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="assets/images/placeholder-frame.png">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        /* General Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all var(--transition-normal);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles (Unified with Dashboard) */
+        .sidebar {
+            width: 280px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: all var(--transition-normal);
+            z-index: 10;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: var(--space-md);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 0 var(--space-md) 0;
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .rc-cells {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 auto 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 5px;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            padding: var(--space-md);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-normal);
+        }
+        
+        .nav-links li.active {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        .nav-links li.active a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-links li:hover:not(.active) {
+            background-color: var(--bg-light);
+        }
+        
+        .nav-links li:hover:not(.active) a {
+            transform: translateX(5px);
+        }
+        
+        .icon {
+            margin-right: var(--space-md);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Mode Toggle in Sidebar - Matching Login Page */
+        .mode-toggle-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md) 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .mode-toggle {
+            position: relative;
+            width: 140px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-toggle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mode-toggle-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, 
+                var(--bg-color), 
+                var(--bg-color) 50%, 
+                var(--ghoul-primary) 50%, 
+                var(--ghoul-primary)
+            );
+            opacity: 0.1;
+        }
+        
+        .mode-toggle-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1;
+        }
+        
+        .human-icon, .ghoul-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            height: 100%;
+            width: 50%;
+        }
+        
+        .human-icon i, .ghoul-icon i {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        
+        .human-icon {
+            color: var(--primary-color);
+        }
+        
+        .ghoul-icon {
+            color: var(--ghoul-primary);
+            opacity: 0.5;
+        }
+        
+        .mode-toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .mode-toggle-knob {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 70px;
+            height: 30px;
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .mode-icon-active {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        /* Animation for toggle knob */
+        @keyframes pulse-knob {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 5px rgba(var(--primary-color-rgb), 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0);
+            }
+        }
+        
+        /* Animation for toggle rotation */
+        @keyframes rotate-icon {
+            0% { transform: translateX(0) rotate(0); }
+            50% { transform: translateX(33px) rotate(180deg); }
+            100% { transform: translateX(66px) rotate(360deg); }
+        }
+        
+        
+        #logout-btn {
+            margin-top: var(--space-md);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: var(--space-lg);
+            transition: all var(--transition-normal);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-color-light);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+
+        .datetime-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+
+        #current-date {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        #current-time {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .styled-select {
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-badge {
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .card-badge.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Stats page specific styles */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .stats-overview {
+            grid-column: 1 / -1;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+        
+        .stat-box {
+            background-color: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg) var(--space-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1), rgba(var(--accent-color-rgb), 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-sm);
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: var(--space-sm);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-color-light);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .stat-trend {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .stat-trend.positive {
+            background-color: rgba(var(--success-color-rgb), 0.1);
+            color: var(--success-color);
+        }
+        
+        .stat-trend.negative {
+            background-color: rgba(var(--danger-color-rgb), 0.1);
+            color: var(--danger-color);
+        }
+        
+        /* Chart Styles */
+        .chart-card {
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-container {
+            flex: 1;
+            position: relative;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-container.half {
+            min-height: 200px;
+        }
+        
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--text-color-light);
+        }
+        
+        .chart-placeholder i {
+            font-size: 2rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .chart-type-toggle {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-type-toggle.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+            font-size: 0.8rem;
+        }
+        
+        /* Achievement Styles */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+        
+        .achievement-stats {
+            font-size: 0.9rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background-color: rgba(var(--accent-color-rgb), 0.1);
+            color: var(--accent-color);
+        }
+        
+        .achievement {
+            background-color: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+        
+        .achievement:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .achievement.unlocked {
+            border-left: 3px solid var(--success-color);
+        }
+        
+        .achievement.locked {
+            border-left: 3px solid var(--border-color);
+            opacity: 0.85;
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .achievement.unlocked .achievement-icon {
+            background-color: rgba(var(--success-color-rgb), 0.1);
+            color: var(--success-color);
+        }
+        
+        .achievement.locked .achievement-icon {
+            background-color: rgba(var(--border-color-rgb), 0.2);
+            color: var(--text-color-light);
+        }
+        
+        .achievement-info {
+            flex: 1;
+        }
+        
+        .achievement-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+        }
+        
+        .achievement-info p {
+            margin: 0 0 8px 0;
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+        }
+        
+        .achievement-date {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            margin-top: 5px;
+        }
+        
+        .achievement-progress {
+            margin-top: 8px;
+        }
+        
+        .achievement-progress .progress-bar {
+            height: 6px;
+            background-color: rgba(var(--border-color-rgb), 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-progress .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+        }
+        
+        .achievement-progress span {
+            font-size: 0.75rem;
+            color: var(--text-color-light);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            max-width: 90%;
+            width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modalAppear 0.3s ease-out;
+        }
+        
+        .modal-header {
+            margin-bottom: var(--space-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-color-light);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+        }
+        
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+        
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+        
+        .export-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-light);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .export-option:hover {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .export-settings {
+            margin: var(--space-lg) 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .export-settings label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        /* Countdown Styles */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            margin: var(--space-lg) 0;
+        }
+        
+        .countdown-ring {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .countdown-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .countdown-ring circle {
+            fill: transparent;
+            stroke-width: 8;
+            stroke: rgba(var(--border-color-rgb), 0.2);
+            cx: 50;
+            cy: 50;
+            r: 40;
+        }
+        
+        .countdown-ring circle:nth-child(2) {
+            stroke: var(--danger-color);
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+        
+        .countdown-ring span {
+            position: absolute;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--danger-color);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes modalAppear {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+        }
+        
+        /* Theme specific styles for Ghoul Mode */
+        body.ghoul-mode {
+            --bg-color: #1a1a1a;
+            --bg-light: #2a2a2a;
+            --text-color: #e0e0e0;
+            --text-color-light: #a0a0a0;
+            --border-color: #3a3a3a;
+            --border-color-rgb: 58, 58, 58;
+            --primary-color: #d32f2f;
+            --primary-color-rgb: 211, 47, 47;
+            --accent-color: #9c27b0;
+            --accent-color-rgb: 156, 39, 176;
+        }
+        
+        body.ghoul-mode .card {
+            background-color: #222;
+            border-color: #333;
+        }
+        
+        body.ghoul-mode .stat-box {
+            background-color: #2c2c2c;
+        }
+        
+        body.ghoul-mode .stat-icon {
+            background: linear-gradient(135deg, rgba(211, 47, 47, 0.1), rgba(156, 39, 176, 0.1));
+            color: #d32f2f;
+        }
+        
+        body.ghoul-mode .achievement.unlocked .achievement-icon {
+            background-color: rgba(76, 175, 80, 0.15);
+        }
+        
+        body.ghoul-mode .achievement-progress .progress-fill {
+            background: linear-gradient(90deg, #d32f2f, #9c27b0);
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: var(--space-sm);
+            }
+            
+            .sidebar .logo, .sidebar .user-info, .mode-toggle-wrapper, .sidebar-header {
+                display: none;
+            }
+            
+            .nav-links li a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            
+            .nav-links li a .icon {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 60px;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-md);
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar/Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="user-info">
+                    <span class="user-name">Loading...</span>
+                    <span class="rc-cells">RC: <span id="rc-cell-count">0</span></span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard.html">
+                        <span class="icon"><i class="fas fa-chart-line"></i></span>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="journal.html">
+                        <span class="icon"><i class="fas fa-book"></i></span>
+                        Journal
+                    </a>
+                </li>
+                <li>
+                    <a href="battle.html">
+                        <span class="icon"><i class="fas fa-fist-raised"></i></span>
+                        Battle
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="stats.html">
+                        <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                        Stats
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html">
+                        <span class="icon"><i class="fas fa-user"></i></span>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mode-toggle-wrapper">
+                <div class="mode-toggle" id="mode-toggle-btn">
+                    <div class="mode-toggle-container">
+                        <div class="mode-toggle-background"></div>
+                        <div class="mode-toggle-icons">
+                            <div class="human-icon">
+                                <i class="fas fa-user"></i>
+                                <span>Human</span>
+                            </div>
+                            <div class="ghoul-icon">
+                                <i class="fas fa-mask"></i>
+                                <span>Ghoul</span>
+                            </div>
+                        </div>
+                        <div class="mode-toggle-slider">
+                            <div class="mode-toggle-knob">
+                                <span class="mode-icon-active"><i class="fas fa-user"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="logout-btn" class="btn danger">Logout</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title">
+                    <h2><i class="fas fa-chart-bar"></i> Statistics & Analytics</h2>
+                    <span class="subtitle">Track your progress and achievements</span>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-display">
+                        <span id="current-date">Loading date...</span>
+                        <span id="current-time">Loading time...</span>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="time-filter" class="styled-select">
+                            <option value="week">Last Week</option>
+                            <option value="month">Last Month</option>
+                            <option value="all" selected>All Time</option>
+                        </select>
+                        <button class="btn icon" id="export-stats" title="Export Statistics">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="stats-container">
+                <div class="card stats-overview">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tachometer-alt"></i> Performance Overview</h3>
+                        <span class="card-badge pulse">Live Data</span>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-value" id="total-tasks">0</div>
+                            <div class="stat-label">Tasks Completed</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 12%
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-value" id="total-pomodoros">0</div>
+                            <div class="stat-label">Pomodoros</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 8%
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-value" id="total-journals">0</div>
+                            <div class="stat-label">Journal Entries</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 5%
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <i class="fas fa-fist-raised"></i>
+                            </div>
+                            <div class="stat-value" id="total-battles">0</div>
+                            <div class="stat-label">Battles</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 15%
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stat-value" id="win-rate">0%</div>
+                            <div class="stat-label">Win Rate</div>
+                            <div class="stat-trend negative">
+                                <i class="fas fa-arrow-down"></i> 3%
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="stat-value" id="total-time">0h</div>
+                            <div class="stat-label">Focus Time</div>
+                            <div class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 10%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> RC Cell Growth</h3>
+                        <div class="chart-controls">
+                            <button class="btn icon chart-type-toggle" data-chart="rc" data-type="line" title="Line Chart">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                            <button class="btn icon chart-type-toggle" data-chart="rc" data-type="bar" title="Bar Chart">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="rc-chart">
+                        <!-- Chart will be inserted here -->
+                        <div class="chart-placeholder">
+                            <i class="fas fa-spinner fa-pulse"></i>
+                            <p>Chart loading...</p>
+                        </div>
+                    </div>
+                    <div class="chart-legend" id="rc-legend"></div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Daily Activity</h3>
+                        <div class="chart-controls">
+                            <button class="btn icon chart-type-toggle active" data-chart="activity" data-type="bar" title="Bar Chart">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="btn icon chart-type-toggle" data-chart="activity" data-type="line" title="Line Chart">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="activity-chart">
+                        <!-- Chart will be inserted here -->
+                        <div class="chart-placeholder">
+                            <i class="fas fa-spinner fa-pulse"></i>
+                            <p>Chart loading...</p>
+                        </div>
+                    </div>
+                    <div class="chart-legend" id="activity-legend"></div>
+                </div>
+                
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-balance-scale"></i> Mode Usage Distribution</h3>
+                        <div class="chart-controls">
+                            <button class="btn icon chart-type-toggle active" data-chart="mode" data-type="doughnut" title="Doughnut Chart">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <button class="btn icon chart-type-toggle" data-chart="mode" data-type="polarArea" title="Polar Area">
+                                <i class="fas fa-circle-notch"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container half" id="mode-chart">
+                        <!-- Chart will be inserted here -->
+                        <div class="chart-placeholder">
+                            <i class="fas fa-spinner fa-pulse"></i>
+                            <p>Chart loading...</p>
+                        </div>
+                    </div>
+                    <div class="chart-legend" id="mode-legend"></div>
+                </div>
+                
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tasks"></i> Task Distribution</h3>
+                        <div class="chart-controls">
+                            <button class="btn icon chart-type-toggle active" data-chart="task" data-type="pie" title="Pie Chart">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <button class="btn icon chart-type-toggle" data-chart="task" data-type="bar" title="Bar Chart">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container half" id="task-distribution-chart">
+                        <!-- Chart will be inserted here -->
+                        <div class="chart-placeholder">
+                            <i class="fas fa-spinner fa-pulse"></i>
+                            <p>Chart loading...</p>
+                        </div>
+                    </div>
+                    <div class="chart-legend" id="task-legend"></div>
+                </div>
+
+                <div class="card achievements">
+                    <div class="card-header">
+                        <h3><i class="fas fa-medal"></i> Achievements</h3>
+                        <div class="achievement-stats">
+                            <span id="achievement-progress">0/12</span> Unlocked
+                        </div>
+                    </div>
+                    <div class="achievements-grid" id="achievements-container">
+                        <!-- Achievements will be loaded here -->
+                        <div class="achievement unlocked">
+                            <div class="achievement-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <h4>First Steps</h4>
+                                <p>Complete your first task</p>
+                                <div class="achievement-date">Unlocked: Aug 5, 2025</div>
+                            </div>
+                        </div>
+                        <div class="achievement unlocked">
+                            <div class="achievement-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <h4>Focus Master</h4>
+                                <p>Complete 10 pomodoros</p>
+                                <div class="achievement-date">Unlocked: Aug 7, 2025</div>
+                            </div>
+                        </div>
+                        <div class="achievement locked">
+                            <div class="achievement-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <h4>Ghoul Unleashed</h4>
+                                <p>Win your first battle</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 50%"></div>
+                                    </div>
+                                    <span>50% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked">
+                            <div class="achievement-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <h4>Kagune Master</h4>
+                                <p>Win 10 battles in a row</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 20%"></div>
+                                    </div>
+                                    <span>20% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked">
+                            <div class="achievement-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <h4>Daily Reflection</h4>
+                                <p>Create journal entries for 7 consecutive days</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 70%"></div>
+                                    </div>
+                                    <span>70% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked">
+                            <div class="achievement-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="achievement-info">
+                                <h4>RC Cell Collector</h4>
+                                <p>Accumulate 10,000 RC Cells</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 35%"></div>
+                                    </div>
+                                    <span>35% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Inactivity Warning Modal -->
+    <div class="modal" id="inactivity-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Ghoul Mode Activating...</h3>
+            </div>
+            <p>Your human form is weakening due to inactivity.</p>
+            <div class="countdown-container">
+                <div class="countdown-ring">
+                    <svg>
+                        <circle cx="50" cy="50" r="40"></circle>
+                        <circle cx="50" cy="50" r="40" id="countdown-circle"></circle>
+                    </svg>
+                    <span id="inactivity-countdown">30</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-mode-switch" class="btn primary"><i class="fas fa-user"></i> Stay Human</button>
+                <button id="accept-mode-switch" class="btn danger"><i class="fas fa-skull"></i> Embrace Ghoul</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Export Modal -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-download"></i> Export Statistics</h3>
+                <button class="btn icon close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="export-options">
+                <div class="export-option" data-format="pdf">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PDF</span>
+                </div>
+                <div class="export-option" data-format="csv">
+                    <i class="fas fa-file-csv"></i>
+                    <span>CSV</span>
+                </div>
+                <div class="export-option" data-format="json">
+                    <i class="fas fa-file-code"></i>
+                    <span>JSON</span>
+                </div>
+            </div>
+            <div class="export-settings">
+                <label>
+                    <input type="checkbox" id="include-charts" checked>
+                    Include charts
+                </label>
+                <label>
+                    <input type="checkbox" id="include-personal-data" checked>
+                    Include personal data
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-export" class="btn primary">Export Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <!-- App Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/stats.js"></script>
+    
+    <!-- Date and Time Script -->
+    <script>
+        // Display current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
+        }
+        
+        // Update time every second
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Mode toggle functionality using the login page style toggle
+        const modeToggleBtn = document.getElementById('mode-toggle-btn');
+        const body = document.body;
+        
+        // Check if there's a saved preference, default to 'human' mode
+        const savedMode = localStorage.getItem('theme-mode') || 'human';
+        
+        // Set initial theme
+        if (savedMode === 'ghoul') {
+            body.className = 'ghoul-mode';
+            if (modeToggleBtn) {
+                updateToggleUI('ghoul');
+            }
+        } else {
+            body.className = 'human-mode';
+            if (modeToggleBtn) {
+                updateToggleUI('human');
+            }
+            localStorage.setItem('theme-mode', 'human');
+        }
+        
+        // Add click event to toggle button
+        if (modeToggleBtn) {
+            modeToggleBtn.addEventListener('click', function() {
+                // If toggleTheme is defined in main.js, use it, otherwise fallback
+                if (typeof toggleTheme === 'function') {
+                    toggleTheme();
+                } else {
+                    // Fallback toggle functionality
+                    const currentMode = body.classList.contains('ghoul-mode') ? 'ghoul' : 'human';
+                    const newMode = currentMode === 'ghoul' ? 'human' : 'ghoul';
+                    
+                    body.className = newMode === 'ghoul' ? 'ghoul-mode' : 'human-mode';
+                    localStorage.setItem('theme-mode', newMode);
+                    updateToggleUI(newMode);
+                    
+                    // Refresh charts if they exist
+                    if (typeof updateChartsTheme === 'function') {
+                        updateChartsTheme();
+                    }
+                }
+            });
+        }
+        
+        // Helper function to update toggle UI based on mode
+        function updateToggleUI(mode) {
+            if (!modeToggleBtn) return;
+            
+            const knob = modeToggleBtn.querySelector('.mode-toggle-knob');
+            const iconActive = modeToggleBtn.querySelector('.mode-icon-active');
+            const humanIcon = modeToggleBtn.querySelector('.human-icon');
+            const ghoulIcon = modeToggleBtn.querySelector('.ghoul-icon');
+            
+            if (!knob || !iconActive || !humanIcon || !ghoulIcon) return;
+            
+            if (mode === 'ghoul') {
+                knob.style.transform = 'translateX(66px)';
+                iconActive.innerHTML = '<i class="fas fa-mask"></i>';
+                humanIcon.style.opacity = '0.5';
+                ghoulIcon.style.opacity = '1';
+            } else {
+                knob.style.transform = 'translateX(0)';
+                iconActive.innerHTML = '<i class="fas fa-user"></i>';
+                humanIcon.style.opacity = '1';
+                ghoulIcon.style.opacity = '0.5';
+            }
+        }
+        
+        // Export modal functionality
+        document.getElementById('export-stats').addEventListener('click', function() {
+            document.getElementById('export-modal').style.display = 'flex';
+        });
+        
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('export-modal').style.display = 'none';
+        });
+        
+        document.getElementById('confirm-export').addEventListener('click', function() {
+            // Mock export functionality
+            alert('Statistics exported successfully!');
+            document.getElementById('export-modal').style.display = 'none';
+        });
+        
+        // Chart type toggle functionality
+        document.querySelectorAll('.chart-type-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const chartId = this.getAttribute('data-chart');
+                const chartType = this.getAttribute('data-type');
+                
+                // Remove active class from all buttons in the same control group
+                this.parentNode.querySelectorAll('.chart-type-toggle').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // In a real application, this would change the chart type
+                console.log(`Changing ${chartId} chart to ${chartType} type`);
+            });
+        });
+    </script>
+    <!-- Theme Animation Scripts -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="assets/js/ghoul-animation.js"></script>
+    <script src="assets/js/theme-animation-loader.js"></script>
+    
+    <!-- PWA and Feature Support -->
+    <script type="module" src="assets/js/service-worker-registration.js"></script>
+    <script type="module" src="assets/js/notifications.js"></script>
+    <script type="module" src="assets/js/achievements.js"></script>
+    <script type="module" src="assets/js/theme-animator.js"></script>
+    <script type="module" src="assets/js/data-sync.js"></script>
+</body>
+</html>

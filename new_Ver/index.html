@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Login</title>
+    
+    <!-- PWA & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c2c2c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="assets/images/placeholder-frame.png">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth-forms.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase SDK v9 (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body class="human-mode">
+    <div class="mode-toggle-wrapper">
+        <div class="mode-toggle" id="mode-toggle-btn">
+            <div class="mode-toggle-container">
+                <div class="mode-toggle-background"></div>
+                <div class="mode-toggle-icons">
+                    <div class="human-icon">
+                        <i class="fas fa-user"></i>
+                        <span>Human</span>
+                    </div>
+                    <div class="ghoul-icon">
+                        <i class="fas fa-mask"></i>
+                        <span>Ghoul</span>
+                    </div>
+                </div>
+                <div class="mode-toggle-slider">
+                    <div class="mode-toggle-knob">
+                        <div class="mode-icon-active">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container auth-container">
+        <header class="auth-header">
+            <div class="logo-container">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="logo-animation"></div>
+            </div>
+            <p class="tagline">Embrace your <span class="accent-text">Ghoul</span>, master your productivity</p>
+        </header>
+
+        <main class="auth-main">
+            <!-- Auth Card Container -->
+            <div class="auth-card">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="login-tab">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="auth-tab" id="signup-tab">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                    <div class="tab-slider"></div>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form active" id="login-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="login-email" placeholder="Your email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="login-password" placeholder="Your password" required>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary pulse-animation">Login</button>
+                            <button type="button" class="btn secondary" id="guest-login">Continue as Guest</button>
+                        </div>
+                        <div class="auth-error" id="login-error"></div>
+                    </form>
+                </div>
+
+                <!-- Signup Form -->
+                <div class="auth-form" id="signup-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="signup-name">Name</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="signup-name" placeholder="Your name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="signup-email" placeholder="Your email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="signup-password" placeholder="Choose a password" required>
+                                <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn primary pulse-animation">Sign Up</button>
+                        </div>
+                        <div class="auth-error" id="signup-error"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading Screen (shown during auth operations) -->
+            <div class="loading" id="loading-screen" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Please wait...</p>
+            </div>
+        </main>
+
+        <footer class="auth-footer">
+            <p>&copy; 2025 BlackReaper. Inspired by Tokyo Ghoul.</p>
+        </footer>
+    </div>
+
+        <!-- Firebase Core -->
+        <script src="firebase/config.js"></script>
+        <script src="firebase/auth.js"></script>
+        <script src="firebase/database.js"></script>
+        <!-- Feature Modules -->
+        <script type="module" src="assets/js/notifications.js"></script>
+        <script type="module" src="assets/js/achievements.js"></script>
+        <script type="module" src="assets/js/theme-animator.js"></script>
+        <script type="module" src="assets/js/data-sync.js"></script>
+        <script type="module" src="assets/js/service-worker-registration.js"></script>
+        <!-- Animation and Main Scripts -->
+        <script src="assets/js/ghoul-animation.js"></script>
+        <script src="assets/js/theme-animation-loader.js"></script>
+        <script src="assets/js/main.js"></script>
+        <!-- Form Fixes Script -->
+        <script src="assets/js/form-fixes.js"></script>
+        
+        <!-- Verification Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('Firebase:', window.firebase ? 'Loaded' : 'Missing');
+                console.log('Auth:', window.auth ? 'Loaded' : 'Missing');
+                console.log('Database:', window.firebase?.database ? 'Loaded' : 'Missing');
+                console.log('Notifications:', window.notificationManager ? 'Loaded' : 'Missing');
+                console.log('Achievements:', window.achievementsTracker ? 'Loaded' : 'Missing');
+                console.log('Theme Animator:', window.themeAnimator ? 'Loaded' : 'Missing');
+                console.log('Data Sync:', window.dataSync ? 'Loaded' : 'Missing');
+            });
+        </script>
+    <script>
+        // Initialize auth-specific features
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply initial form animations
+            setTimeout(() => {
+                const authForm = document.querySelector('.auth-form');
+                if (authForm) {
+                    authForm.classList.add('fade-in');
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

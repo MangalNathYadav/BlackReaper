@@ -1,0 +1,80 @@
+/* 
+   Form Fixes CSS
+   This file corrects styling conflicts between different form styles
+*/
+
+/* Ensure form groups have proper spacing */
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+/* Fix input-with-icon positioning */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Correct icon positioning */
+.input-with-icon i:first-child {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Adjust input padding when icons are present */
+.input-with-icon input {
+  padding-left: 40px;
+  width: 100%;
+}
+
+/* Fix password toggle positioning */
+.input-with-icon .password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  z-index: 2;
+}
+
+/* Adjust input padding when password toggle is present */
+.input-with-icon input[type="password"] {
+  padding-right: 40px;
+}
+
+/* Focus states for inputs with icons */
+.input-with-icon input:focus + i {
+  color: var(--accent-color);
+}
+
+/* Ghoul mode specific icon colors */
+body.ghoul-mode .input-with-icon input:focus + i {
+  color: var(--danger-color);
+}
+
+/* Fix for overlapping elements */
+.form-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Error message styling */
+.auth-error {
+  color: var(--danger-color);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}

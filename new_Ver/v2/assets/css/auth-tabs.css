@@ -1,0 +1,78 @@
+/* Enhanced Auth Tab Styles */
+.auth-tabs {
+    position: relative;
+    display: flex;
+    background: rgba(var(--primary-color-rgb), 0.05);
+    padding: 8px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px 20px;
+    color: var(--text-color);
+    background: transparent;
+    border: none;
+    font-weight: 600;
+    font-size: var(--font-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius-md);
+}
+
+.auth-tab.active {
+    color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.auth-tab:hover:not(.active) {
+    background: rgba(var(--primary-color-rgb), 0.05);
+    color: var(--primary-color);
+}
+
+.auth-tab i {
+    font-size: 1.1em;
+    transition: transform 0.3s ease;
+}
+
+.auth-tab:hover i {
+    transform: translateY(-2px);
+}
+
+.tab-slider {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background: var(--primary-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-full);
+}
+
+/* Ghoul Mode Styles */
+.ghoul-mode .auth-tabs {
+    background: rgba(var(--rc-cells-color-rgb), 0.05);
+}
+
+.ghoul-mode .auth-tab.active {
+    color: var(--rc-cells-color);
+    background: rgba(var(--rc-cells-color-rgb), 0.1);
+    text-shadow: 0 0 5px rgba(var(--rc-cells-color-rgb), 0.5);
+}
+
+.ghoul-mode .auth-tab:hover:not(.active) {
+    background: rgba(var(--rc-cells-color-rgb), 0.05);
+    color: var(--rc-cells-color);
+}
+
+.ghoul-mode .tab-slider {
+    background: var(--rc-cells-color);
+    box-shadow: 0 0 10px rgba(var(--rc-cells-color-rgb), 0.3);
+}

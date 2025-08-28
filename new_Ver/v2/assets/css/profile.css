@@ -1,0 +1,385 @@
+/* 
+   BlackReaper v2 - Profile CSS
+   Inspired by Tokyo Ghoul
+*/
+
+/* Profile Layout */
+.profile-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Profile Header */
+.profile-header {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(var(--primary-color-rgb), 0.1), transparent);
+  z-index: 0;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-change {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  text-align: center;
+  padding: 6px 0;
+  font-size: var(--font-xs);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.profile-avatar:hover .profile-avatar-change {
+  opacity: 1;
+}
+
+.profile-info {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-name {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  color: var(--text-color);
+}
+
+.profile-title {
+  font-size: var(--font-md);
+  color: var(--muted-color);
+  margin-bottom: var(--space-sm);
+}
+
+.profile-bio {
+  margin-top: var(--space-md);
+  color: var(--text-color);
+  max-width: 600px;
+}
+
+.profile-stats {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+.profile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.stat-label {
+  font-size: var(--font-sm);
+  color: var(--muted-color);
+}
+
+/* Edit Profile Form */
+.profile-edit-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.profile-edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profile-edit-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-edit-title i {
+  color: var(--primary-color);
+}
+
+.profile-edit-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.profile-edit-form .form-group:last-child {
+  grid-column: span 2;
+}
+
+.profile-edit-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  grid-column: span 2;
+}
+
+/* RC Cells Progress */
+.rc-cells-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.rc-cells-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.rc-cells-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rc-cells-title i {
+  color: var(--primary-color);
+}
+
+.rc-cells-count {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.rc-progress-container {
+  margin-top: var(--space-md);
+}
+
+.rc-progress-bar {
+  height: 12px;
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+
+.rc-progress-fill {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: var(--radius-full);
+  width: 0;
+  transition: width 1s ease;
+}
+
+.rc-milestones {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+}
+
+.rc-milestone {
+  text-align: center;
+  position: relative;
+}
+
+.rc-milestone::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 8px;
+  background: var(--muted-color);
+}
+
+.rc-milestone-value {
+  font-size: var(--font-xs);
+  color: var(--muted-color);
+}
+
+/* Achievements Section */
+.achievements-section {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.achievements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.achievements-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.achievements-title i {
+  color: var(--primary-color);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.achievement-card {
+  background: rgba(var(--primary-color-rgb), 0.05);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.achievement-card.unlocked {
+  background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.achievement-card.locked {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+.achievement-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: var(--space-sm);
+}
+
+.achievement-name {
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+
+.achievement-desc {
+  font-size: var(--font-sm);
+  color: var(--muted-color);
+  margin-bottom: var(--space-sm);
+}
+
+.achievement-progress {
+  margin-top: var(--space-sm);
+  font-size: var(--font-xs);
+  color: var(--muted-color);
+}
+
+.achievement-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-md);
+  }
+  
+  .profile-stats {
+    justify-content: center;
+  }
+  
+  .profile-edit-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-edit-form .form-group:last-child,
+  .form-actions {
+    grid-column: span 1;
+  }
+  
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .achievements-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .profile-edit-header {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+}

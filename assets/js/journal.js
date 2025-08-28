@@ -1,244 +1,280 @@
-// journal.js - Specific functionality for the journal page
+// Journal JavaScript file
 
-// DOM Elements
-const journalEntry = document.getElementById('journal-entry');
-const moodSelect = document.getElementById('mood-select');
-const saveJournalButton = document.getElementById('save-journal');
-const clearJournalButton = document.getElementById('clear-journal');
-const filterEntries = document.getElementById('filter-entries');
-const entriesContainer = document.getElementById('entries-container');
-const psychQuote = document.getElementById('psych-quote');
-
-// Psychological quotes based on mood
-const moodQuotes = {
-    calm: [
-        "Even in the midst of chaos, find stillness within.",
-        "The sea is both calm and dangerous. So am I.",
-        "Serenity isn't the absence of a storm but finding peace within it.",
-        "I am the calm before the storm.",
-        "My mind is a sanctuary only I control."
-    ],
-    anxious: [
-        "Fear is a reaction. Courage is a decision.",
-        "Anxiety is just a shadow. I am the light.",
-        "In a world full of chaos, sometimes I need to be the storm.",
-        "The fear we don't face becomes our limit.",
-        "What scares me most is becoming the monster I fear."
-    ],
-    angry: [
-        "My anger is a gift, a weapon I must learn to wield.",
-        "I would rather be consumed by the truth than comforted with a lie.",
-        "Sometimes you need to burn bridges to stop yourself from crossing them again.",
-        "My rage is just my body's alarm system telling me something needs to change.",
-        "The world broke me, but the cracks are where the light enters."
-    ],
-    hungry: [
-        "This hunger inside me... I don't know if I can control it forever.",
-        "The more I feed it, the more it wants.",
-        "I'm afraid of what I'll become if I give in to this hunger.",
-        "My appetite has become something more sinister.",
-        "There's a void inside me that normal food can't fill."
-    ],
-    broken: [
-        "Sometimes being broken means you were strong enough to endure.",
-        "The world is cruel, but that doesn't mean I have to be.",
-        "I am both the damaged and the damager.",
-        "My scars tell the story of survival, not victimhood.",
-        "Being broken means I have the opportunity to put myself back together differently."
-    ]
-};
-
-// Initialize the journal when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Journal initializing...');
-    initializeJournal();
+  // Check if user is logged in before initializing journal
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      initJournal(user);
+    }
+  });
+  
+  // Listen for theme changes to check journal visibility
+  document.addEventListener('themeChanged', event => {
+    const mode = event.detail.mode;
+    checkJournalAccess(mode);
+  });
 });
 
-// Initialize journal components
-function initializeJournal() {
-    loadJournalEntries();
-    setupJournalEventListeners();
-    updateQuoteForMood();
-    setupTypingEffect();
-}
-
-// Load journal entries from localStorage or Firebase
-function loadJournalEntries() {
-    const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+// Initialize journal page
+async function initJournal(user) {
+  try {
+    // Check if we're in the appropriate mode
+    const currentMode = document.body.classList.contains('ghoul-mode') ? 'ghoul' : 'human';
+    checkJournalAccess(currentMode);
     
-    displayJournalEntries(entries);
+    // Fetch journal entries if in ghoul mode
+    if (currentMode === 'ghoul') {
+      await loadJournalEntries(user.uid);
+    }
+    
+    // Set up new entry functionality
+    setupNewEntryForm(user.uid);
+    
+    // Set up switch to ghoul mode button
+    const switchBtn = document.getElementById('switch-to-ghoul-btn');
+    if (switchBtn) {
+      switchBtn.addEventListener('click', () => {
+        // Toggle to ghoul mode
+        document.body.className = 'ghoul-mode';
+        
+        // Update toggle button
+        const toggleBtn = document.getElementById('mode-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.className = 'ghoul-mode';
+          toggleBtn.querySelector('.mode-label').textContent = 'Ghoul';
+        }
+        
+        // Save preference
+        localStorage.setItem('theme-mode', 'ghoul');
+        
+        // Save to database if user is logged in
+        if (user) {
+          database.updateUserMode(user.uid, 'ghoul');
+        }
+        
+        // Show journal content
+        checkJournalAccess('ghoul');
+        
+        // Load journal entries
+        loadJournalEntries(user.uid);
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error initializing journal:', error);
+  }
 }
 
-// Display journal entries in the UI
-function displayJournalEntries(entries) {
-    // Clear existing entries
-    entriesContainer.innerHTML = '';
+// Check if user can access journal (only in ghoul mode)
+function checkJournalAccess(mode) {
+  const journalContent = document.getElementById('journal-content');
+  const ghoulWarning = document.getElementById('ghoul-mode-required');
+  
+  if (mode === 'ghoul') {
+    // Show journal content in ghoul mode
+    if (journalContent) journalContent.style.display = 'block';
+    if (ghoulWarning) ghoulWarning.style.display = 'none';
+  } else {
+    // Hide journal content in human mode
+    if (journalContent) journalContent.style.display = 'none';
+    if (ghoulWarning) ghoulWarning.style.display = 'block';
+  }
+}
+
+// Load journal entries from database
+async function loadJournalEntries(userId) {
+  try {
+    const entries = await database.getJournalEntries(userId);
+    
+    const journalContent = document.getElementById('journal-content');
+    if (!journalContent) return;
+    
+    // Clear existing content
+    journalContent.innerHTML = '';
     
     if (entries.length === 0) {
-        entriesContainer.innerHTML = '<p class="no-entries">No journal entries yet. Start writing!</p>';
-        return;
+      // Show empty state
+      journalContent.innerHTML = `
+        <div class="empty-state">
+          <p>No journal entries yet. Share your thoughts...</p>
+        </div>
+      `;
+      return;
     }
     
-    // Sort entries by date (newest first)
-    entries.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    // Add each entry to the UI
+    // Add entries to container
     entries.forEach(entry => {
-        const div = document.createElement('div');
-        div.className = 'entry blur-content human-only';
-        
-        const date = new Date(entry.date);
-        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-        
-        div.innerHTML = `
-            <div class="entry-header">
-                <span class="entry-date">${formattedDate}</span>
-                <span class="entry-mood ${entry.mood}">${entry.mood}</span>
-            </div>
-            <div class="entry-content">
-                <p>${entry.text}</p>
-            </div>
-        `;
-        
-        entriesContainer.appendChild(div);
+      const entryElement = createEntryElement(entry);
+      journalContent.appendChild(entryElement);
     });
+    
+  } catch (error) {
+    console.error('Error loading journal entries:', error);
+  }
 }
 
-// Save journal entry
-function saveJournalEntry() {
-    const text = journalEntry.value.trim();
-    const mood = moodSelect.value;
-    
-    if (text) {
-        // Get existing entries
-        const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+// Create journal entry element
+function createEntryElement(entry) {
+  const entryCard = document.createElement('div');
+  entryCard.className = `card journal-entry mood-${entry.mood}`;
+  
+  // Format date
+  const date = new Date(entry.createdAt);
+  const formattedDate = date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  // Create entry content
+  entryCard.innerHTML = `
+    <div class="entry-header">
+      <h3 class="entry-title">${entry.title}</h3>
+      <span class="entry-date">${formattedDate}</span>
+    </div>
+    <div class="entry-mood">Mood: ${entry.mood}</div>
+    <div class="entry-content">${formatJournalContent(entry.content)}</div>
+    ${entry.imageData ? `<div class="entry-image"><img src="${entry.imageData}" alt="Journal image"></div>` : ''}
+  `;
+  
+  return entryCard;
+}
+
+// Format journal content with line breaks
+function formatJournalContent(content) {
+  return content.replace(/\n/g, '<br>');
+}
+
+// Set up new entry form
+function setupNewEntryForm(userId) {
+  const newEntryBtn = document.getElementById('new-entry-btn');
+  const modal = document.getElementById('new-entry-modal');
+  const form = document.getElementById('journal-form');
+  const cancelBtn = document.getElementById('cancel-entry');
+  const imageInput = document.getElementById('entry-image');
+  const imagePreview = document.getElementById('image-preview');
+  
+  // Show modal when new entry button is clicked
+  if (newEntryBtn) {
+    newEntryBtn.addEventListener('click', () => {
+      // Only allow new entries in ghoul mode
+      if (!document.body.classList.contains('ghoul-mode')) {
+        alert('You must be in Ghoul Mode to add journal entries.');
+        return;
+      }
+      
+      if (modal) {
+        modal.style.display = 'flex';
+        resetForm();
+      }
+    });
+  }
+  
+  // Hide modal when cancel is clicked
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      if (modal) {
+        modal.style.display = 'none';
+        resetForm();
+      }
+    });
+  }
+  
+  // Close modal when clicking outside content
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+        resetForm();
+      }
+    });
+  }
+  
+  // Handle image preview
+  if (imageInput && imagePreview) {
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.innerHTML = `<img src="${e.target.result}" alt="Selected image">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imagePreview.innerHTML = '';
+      }
+    });
+  }
+  
+  // Handle form submission
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      try {
+        const title = document.getElementById('entry-title').value.trim();
+        const mood = document.getElementById('entry-mood').value;
+        const content = document.getElementById('entry-content').value.trim();
+        const imageFile = document.getElementById('entry-image').files[0];
         
-        // Add new entry
-        entries.unshift({
-            text,
-            mood,
-            date: new Date().toISOString()
-        });
+        let imageData = null;
         
-        // Save to localStorage
-        localStorage.setItem('journalEntries', JSON.stringify(entries));
+        // Convert image to base64 if provided
+        if (imageFile) {
+          imageData = await convertImageToBase64(imageFile);
+        }
         
-        // Also save to journal previews for dashboard
-        saveJournalPreview(text, mood);
+        // Create entry in database
+        const entryData = {
+          title,
+          mood,
+          content,
+          imageData,
+        };
         
-        // Clear input
-        clearJournal();
+        await database.createJournalEntry(userId, entryData);
+        
+        // Hide modal
+        if (modal) {
+          modal.style.display = 'none';
+        }
         
         // Reload entries
-        loadJournalEntries();
+        await loadJournalEntries(userId);
         
-        // Apply glitch effect
-        BlackReaper.applyGlitchEffect();
-        
-        // Show success message
-        alert('Journal entry saved successfully.');
-    }
-}
-
-// Clear journal input
-function clearJournal() {
-    journalEntry.value = '';
-}
-
-// Save journal preview for dashboard
-function saveJournalPreview(text, mood) {
-    const previews = JSON.parse(localStorage.getItem('journalPreviews')) || [];
-    
-    previews.unshift({
-        text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
-        date: new Date().toISOString(),
-        mood
+      } catch (error) {
+        console.error('Error creating journal entry:', error);
+        alert('Failed to save journal entry. Please try again.');
+      }
     });
-    
-    // Keep only the 5 most recent previews
-    if (previews.length > 5) {
-        previews.pop();
+  }
+  
+  // Reset form fields
+  function resetForm() {
+    if (form) {
+      form.reset();
+      if (imagePreview) {
+        imagePreview.innerHTML = '';
+      }
     }
-    
-    localStorage.setItem('journalPreviews', JSON.stringify(previews));
+  }
 }
 
-// Filter journal entries
-function filterJournalEntries() {
-    const filter = filterEntries.value.toLowerCase();
-    const entries = JSON.parse(localStorage.getItem('journalEntries')) || [];
+// Convert image file to base64 string
+function convertImageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
     
-    if (!filter) {
-        displayJournalEntries(entries);
-        return;
-    }
+    reader.onload = () => {
+      resolve(reader.result);
+    };
     
-    const filteredEntries = entries.filter(entry => 
-        entry.text.toLowerCase().includes(filter) || 
-        entry.mood.toLowerCase().includes(filter)
-    );
+    reader.onerror = () => {
+      reject(new Error('Failed to read file.'));
+    };
     
-    displayJournalEntries(filteredEntries);
-}
-
-// Update psychological quote based on selected mood
-function updateQuoteForMood() {
-    const mood = moodSelect.value;
-    const quotes = moodQuotes[mood] || moodQuotes.calm;
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    
-    psychQuote.textContent = quotes[randomIndex];
-    
-    // Add fade effect
-    psychQuote.classList.add('fade-in');
-    setTimeout(() => {
-        psychQuote.classList.remove('fade-in');
-    }, 1000);
-}
-
-// Setup typing effect for journal entry
-function setupTypingEffect() {
-    if (journalEntry) {
-        journalEntry.addEventListener('input', function() {
-            // Random chance to add glitch effect while typing
-            if (Math.random() < 0.1) {
-                this.classList.add('glitch-active');
-                setTimeout(() => {
-                    this.classList.remove('glitch-active');
-                }, 200);
-            }
-        });
-    }
-}
-
-// Setup event listeners specific to the journal
-function setupJournalEventListeners() {
-    // Save journal button
-    if (saveJournalButton) {
-        saveJournalButton.addEventListener('click', saveJournalEntry);
-    }
-    
-    // Clear journal button
-    if (clearJournalButton) {
-        clearJournalButton.addEventListener('click', clearJournal);
-    }
-    
-    // Filter entries input
-    if (filterEntries) {
-        filterEntries.addEventListener('input', filterJournalEntries);
-    }
-    
-    // Mood select
-    if (moodSelect) {
-        moodSelect.addEventListener('change', updateQuoteForMood);
-    }
-    
-    // Save on Ctrl+Enter
-    if (journalEntry) {
-        journalEntry.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                saveJournalEntry();
-            }
-        });
-    }
+    reader.readAsDataURL(file);
+  });
 }

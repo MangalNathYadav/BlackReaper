@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackReaper | Profile</title>
+    
+    <!-- PWA & Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c2c2c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="assets/images/placeholder-frame.png">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK v9 (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+</head>
+<body class="human-mode">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">BlackReaper</h1>
+                <div class="user-info">
+                    <div class="user-name">Loading...</div>
+                    <div class="rc-cells">
+                        <i class="fas fa-dna"></i>
+                        <span id="rc-cell-count">0</span> RC Cells
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="nav-links">
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="journal.html">
+                        <i class="fas fa-book"></i>
+                        Journal
+                    </a>
+                </li>
+                <li>
+                    <a href="battle.html">
+                        <i class="fas fa-fist-raised"></i>
+                        Battle
+                    </a>
+                </li>
+                <li>
+                    <a href="stats.html">
+                        <i class="fas fa-chart-line"></i>
+                        Stats
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="active">
+                        <i class="fas fa-user-circle"></i>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="btn outline-primary">
+                    <i class="fas fa-adjust"></i>
+                    Toggle Theme
+                </button>
+                <button id="logout-btn" class="btn outline-secondary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Mobile Sidebar Toggle -->
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="assets/images/placeholder-frame.png" alt="Profile avatar" id="user-avatar">
+                        <div class="profile-avatar-change">Change Avatar</div>
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="profile-name" id="profile-name">Loading...</h2>
+                        <p class="profile-title">Level <span id="user-level">1</span> Ghoul</p>
+                        <p class="profile-bio" id="profile-bio">Loading bio information...</p>
+                        
+                        <div class="profile-stats">
+                            <div class="profile-stat">
+                                <div class="stat-value" id="tasks-completed">0</div>
+                                <div class="stat-label">Tasks</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="stat-value" id="focus-hours">0</div>
+                                <div class="stat-label">Hours</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="stat-value" id="achievements-count">0</div>
+                                <div class="stat-label">Achievements</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- RC Cells Progress -->
+                <div class="rc-cells-card">
+                    <div class="rc-cells-header">
+                        <h3 class="rc-cells-title">
+                            <i class="fas fa-dna"></i>
+                            RC Cells
+                        </h3>
+                        <div class="rc-cells-count" id="rc-cells-total">0</div>
+                    </div>
+                    
+                    <div class="rc-progress-container">
+                        <div class="rc-progress-bar">
+                            <div class="rc-progress-fill" id="rc-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="rc-milestones">
+                            <div class="rc-milestone">
+                                <div class="rc-milestone-value">0</div>
+                            </div>
+                            <div class="rc-milestone">
+                                <div class="rc-milestone-value">500</div>
+                            </div>
+                            <div class="rc-milestone">
+                                <div class="rc-milestone-value">1000</div>
+                            </div>
+                            <div class="rc-milestone">
+                                <div class="rc-milestone-value">2500</div>
+                            </div>
+                            <div class="rc-milestone">
+                                <div class="rc-milestone-value">5000</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 16px; color: var(--muted-color);">
+                        <i class="fas fa-info-circle"></i>
+                        RC cells are earned by completing tasks, focus sessions, and winning battles.
+                    </p>
+                </div>
+                
+                <!-- Edit Profile Form -->
+                <div class="profile-edit-card">
+                    <div class="profile-edit-header">
+                        <h3 class="profile-edit-title">
+                            <i class="fas fa-edit"></i>
+                            Edit Profile
+                        </h3>
+                    </div>
+                    
+                    <form class="profile-edit-form" id="profile-edit-form">
+                        <div class="form-group">
+                            <label for="edit-username">Username</label>
+                            <input type="text" id="edit-username" placeholder="Your username">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-email">Email</label>
+                            <input type="email" id="edit-email" placeholder="Your email" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-bio">Bio</label>
+                            <textarea id="edit-bio" placeholder="Tell us about yourself"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancel-edit" class="btn secondary">Cancel</button>
+                            <button type="submit" class="btn primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Achievements Section -->
+                <div class="achievements-section">
+                    <div class="achievements-header">
+                        <h3 class="achievements-title">
+                            <i class="fas fa-trophy"></i>
+                            Achievements
+                        </h3>
+                    </div>
+                    
+                    <div class="achievements-grid" id="achievements-grid">
+                        <!-- Achievements will be loaded here -->
+                        <div class="achievement-card locked">
+                            <i class="fas fa-clock achievement-icon"></i>
+                            <h4 class="achievement-name">Time Master</h4>
+                            <p class="achievement-desc">Complete 10 pomodoro sessions</p>
+                            <div class="achievement-progress">0/10</div>
+                        </div>
+                        
+                        <div class="achievement-card locked">
+                            <i class="fas fa-tasks achievement-icon"></i>
+                            <h4 class="achievement-name">Task Crusher</h4>
+                            <p class="achievement-desc">Complete 20 tasks</p>
+                            <div class="achievement-progress">0/20</div>
+                        </div>
+                        
+                        <div class="achievement-card locked">
+                            <i class="fas fa-fire achievement-icon"></i>
+                            <h4 class="achievement-name">Streak Master</h4>
+                            <p class="achievement-desc">Maintain a 7-day streak</p>
+                            <div class="achievement-progress">0/7</div>
+                        </div>
+                        
+                        <div class="achievement-card locked">
+                            <i class="fas fa-fist-raised achievement-icon"></i>
+                            <h4 class="achievement-name">Battle Winner</h4>
+                            <p class="achievement-desc">Win 5 battles</p>
+                            <div class="achievement-progress">0/5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase Core -->
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    
+    <!-- Feature Modules -->
+    <script type="module" src="assets/js/notifications.js"></script>
+    <script type="module" src="assets/js/theme-animator.js"></script>
+    
+    <!-- Main Script -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/profile.js"></script>
+</body>
+</html>

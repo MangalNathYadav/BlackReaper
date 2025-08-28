@@ -1,0 +1,94 @@
+{
+  "name": "BlackReaper",
+  "short_name": "BlackReaper",
+  "description": "A Tokyo Ghoul inspired productivity app that helps you manage tasks, track habits, and battle procrastination.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c2c2c",
+  "icons": [
+    {
+      "src": "/assets/images/placeholder-frame.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/placeholder-frame.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your tasks and productivity dashboard",
+      "url": "/dashboard.html",
+      "icons": [
+        {
+          "src": "/assets/images/placeholder-frame.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Battle",
+      "short_name": "Battle",
+      "description": "Battle opponents to level up your productivity",
+      "url": "/battle.html",
+      "icons": [
+        {
+          "src": "/assets/images/placeholder-frame.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Journal",
+      "short_name": "Journal",
+      "description": "Write journal entries to track your progress",
+      "url": "/journal.html",
+      "icons": [
+        {
+          "src": "/assets/images/placeholder-frame.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "short_name": "Stats",
+      "description": "View your productivity stats",
+      "url": "/stats.html",
+      "icons": [
+        {
+          "src": "/assets/images/placeholder-frame.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/assets/images/placeholder-frame.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view of BlackReaper"
+    },
+    {
+      "src": "/assets/images/placeholder-frame.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Battle mode in BlackReaper"
+    }
+  ],
+  "categories": ["productivity", "lifestyle"],
+  "orientation": "any",
+  "lang": "en-US"
+}

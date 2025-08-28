@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="human">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>BlackReaper • Profile</title>
+  <link rel="stylesheet" href="/assets/css/theme.css"/>
+  <link rel="stylesheet" href="/assets/css/base.css"/>
+  <link rel="stylesheet" href="/assets/css/components.css"/>
+  <style>
+    header.app { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; gap:1rem; position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--ring); z-index:10; }
+    main { padding:1rem; display:grid; gap:1.25rem; max-width:840px; margin:0 auto; }
+    .panel { background:var(--card); border:1px solid var(--ring); padding:1rem 1.1rem; border-radius:16px; display:flex; flex-direction:column; gap:.9rem; }
+    .avatar-wrap { display:flex; gap:1rem; align-items:center; }
+    .avatar-wrap img { width:84px; height:84px; object-fit:cover; border-radius:18px; border:2px solid var(--accent); background:#00000022; }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:.75rem; }
+    .stat { background:var(--card); border:1px solid var(--ring); padding:.55rem .6rem; border-radius:12px; display:flex; flex-direction:column; gap:.25rem; font-size:.65rem; }
+    .stat strong { font-size:.8rem; }
+    form#profileForm { display:flex; flex-direction:column; gap:.7rem; }
+    #avatarInput { font-size:.65rem; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <button id="modeToggle" aria-label="Switch mode" aria-pressed="false"><span class="icon" aria-hidden="true">🌓</span><span class="txt">Human</span></button>
+  <header class="app">
+    <strong>Profile</strong>
+    <nav class="row" style="gap:.5rem;">
+      <a href="/dashboard.html" class="sec" style="font-size:.65rem; padding:.4rem .6rem;">Dashboard</a>
+      <a href="/journal.html" class="sec" style="font-size:.65rem; padding:.4rem .6rem;">Journal</a>
+      <a href="/battle.html" class="sec" style="font-size:.65rem; padding:.4rem .6rem;">Battle</a>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="panel" id="profilePanel">
+      <h2 style="margin:0;font-size:1rem;">Account</h2>
+      <form id="profileForm" autocomplete="off">
+        <div class="avatar-wrap">
+          <img id="avatarImg" alt="avatar" src="" />
+          <div class="stack" style="--space:.4rem;">
+            <label style="font-size:.65rem; display:flex; flex-direction:column; gap:.25rem;">Display Name
+              <input id="displayNameInput" maxlength="32" required />
+            </label>
+            <label style="font-size:.65rem; display:flex; flex-direction:column; gap:.25rem;">Avatar (<= 25KB)
+              <input type="file" id="avatarInput" accept="image/*" />
+            </label>
+          </div>
+        </div>
+        <label style="font-size:.65rem; display:flex; flex-direction:column; gap:.25rem;">Preferred Mode
+          <select id="modePrefSelect">
+            <option value="human">Human</option>
+            <option value="ghoul">Ghoul</option>
+          </select>
+        </label>
+        <div class="row" style="gap:.6rem;">
+          <button type="submit">Save Profile</button>
+          <button type="button" id="applyPrefBtn" class="sec">Apply Mode Now</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel" id="statsPanel">
+      <h2 style="margin:0;font-size:1rem;">Stats</h2>
+      <div class="stats-grid" id="statsGrid"></div>
+    </section>
+  </main>
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/profile.js"></script>
+</body>
+</html>

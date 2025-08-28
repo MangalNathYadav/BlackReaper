@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics | BlackReaper</title>
+    <meta name="description" content="Track your productivity metrics and progress in BlackReaper's Tokyo Ghoul inspired stats dashboard">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Stats Page Specific Styles */
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.tasks {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+        }
+
+        .stat-icon.time {
+            background: linear-gradient(135deg, #2196F3, #03A9F4);
+        }
+
+        .stat-icon.streak {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+        }
+
+        .stat-icon.rc {
+            background: linear-gradient(135deg, #9C27B0, #E91E63);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 500px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-action {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-action:hover {
+            background: var(--hover-bg);
+        }
+
+        .chart-action.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .achievement-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: white;
+            position: relative;
+        }
+
+        .achievement-icon.locked {
+            background: #666;
+            opacity: 0.5;
+        }
+
+        .achievement-icon.unlocked {
+            background: linear-gradient(135deg, #FFC107, #FF5722);
+        }
+
+        .achievement-icon .lock {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #333;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .achievement-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .achievement-progress {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .achievement-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #FFC107, #FF5722);
+            width: 0%;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-data i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-mask"></i>
+            <span>BlackReaper</span>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+            <a href="battle.html"><i class="fa-solid fa-khanda"></i><span>Battle</span></a>
+            <a href="journal.html"><i class="fa-solid fa-book"></i><span>Journal</span></a>
+            <a href="stats.html" class="active"><i class="fa-solid fa-chart-line"></i><span>Stats</span></a>
+            <a href="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="theme-toggle">
+                <i class="fa-solid fa-moon"></i>
+                <span>Ghoul Mode</span>
+                <div class="toggle-switch">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <div class="logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="menu-toggle">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="logo">
+            <i class="fa-solid fa-mask"></i>
+            <span>BlackReaper</span>
+        </div>
+        <div class="mobile-actions">
+            <div class="theme-toggle-mobile">
+                <i class="fa-solid fa-moon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="stats-container">
+            <div class="stats-header">
+                <h1>Your Statistics</h1>
+                <p>Track your productivity metrics and progress</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon tasks">
+                        <i class="fa-solid fa-tasks"></i>
+                    </div>
+                    <div class="stat-value" id="tasks-completed">0</div>
+                    <div class="stat-label">Tasks Completed</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon time">
+                        <i class="fa-solid fa-hourglass"></i>
+                    </div>
+                    <div class="stat-value" id="focus-time">0</div>
+                    <div class="stat-label">Hours Focused</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon streak">
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div class="stat-value" id="streak-days">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon rc">
+                        <i class="fa-solid fa-dna"></i>
+                    </div>
+                    <div class="stat-value" id="rc-cells">0</div>
+                    <div class="stat-label">RC Cells</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <!-- Activity Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Activity Timeline</div>
+                        <div class="chart-actions">
+                            <button class="chart-action active" data-period="week">Week</button>
+                            <button class="chart-action" data-period="month">Month</button>
+                            <button class="chart-action" data-period="year">Year</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="activity-chart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Task Distribution Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Task Completion</div>
+                        <div class="chart-actions">
+                            <button class="chart-action active" data-view="day">By Day</button>
+                            <button class="chart-action" data-view="category">By Category</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="task-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Section -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Achievements</div>
+                    <div><span id="achievements-count">0/12</span> Unlocked</div>
+                </div>
+                <div class="achievement-grid" id="achievements-grid">
+                    <!-- Achievements will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase/config.js"></script>
+    <script src="firebase/auth.js"></script>
+    <script src="firebase/database.js"></script>
+    <script src="firebase/firebase-bridge.js"></script>
+    <script src="firebase/state.js"></script>
+    <script src="firebase/firebase.js"></script>
+
+    <!-- App Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/stats.js"></script>
+    <script src="assets/js/theme-animator.js"></script>
+    <script src="assets/js/notifications.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script src="assets/js/service-worker-registration.js"></script>
+</body>
+</html>

@@ -1,1381 +1,323 @@
-/* ===== BASE STYLES ===== */
-:root {
-    /* Ghoul Mode (Dark) Variables */
-    --primary-bg-ghoul: #0a0a0a;
-    --secondary-bg-ghoul: #141414;
-    --accent-color-ghoul: #dc143c;
-    --accent-hover-ghoul: #f01d49;
-    --accent-dark-ghoul: #a01030;
-    --accent-glow-ghoul: rgba(220, 20, 60, 0.5);
-    --text-primary-ghoul: #f0f0f0;
-    --text-secondary-ghoul: #c0c0c0;
-    --border-color-ghoul: rgba(220, 20, 60, 0.3);
-    --card-bg-ghoul: rgba(20, 20, 20, 0.7);
-    --panel-shadow-ghoul: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-    
-    /* Human Mode (Light) Variables */
-    --primary-bg-human: #f5f5f7;
-    --secondary-bg-human: #e8e8e8;
-    --accent-color-human: #2c7be5;
-    --accent-hover-human: #1a68d1;
-    --accent-dark-human: #0d53b5;
-    --accent-glow-human: rgba(44, 123, 229, 0.5);
-    --text-primary-human: #333333;
-    --text-secondary-human: #666666;
-    --border-color-human: rgba(0, 0, 0, 0.1);
-    --card-bg-human: rgba(255, 255, 255, 0.7);
-    --panel-shadow-human: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-    
-    /* Common Variables */
-    --rc-cell-low: #4CAF50;
-    --rc-cell-medium: #FFC107;
-    --rc-cell-high: #F44336;
-    --human-bg: rgba(255, 255, 255, 0.95);
-    --ghoul-bg: rgba(40, 10, 15, 0.95);
-    --glass-effect: blur(10px);
-    --border-radius-sm: 8px;
-    --border-radius-md: 12px;
-    --border-radius-lg: 20px;
-    --transition-normal: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    --transition-slow: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    
-    /* Default to Ghoul Mode */
-    --primary-bg: var(--primary-bg-ghoul);
-    --secondary-bg: var(--secondary-bg-ghoul);
-    --accent-color: var(--accent-color-ghoul);
-    --accent-hover: var(--accent-hover-ghoul);
-    --accent-dark: var(--accent-dark-ghoul);
-    --accent-glow: var(--accent-glow-ghoul);
-    --text-primary: var(--text-primary-ghoul);
-    --text-secondary: var(--text-secondary-ghoul);
-    --border-color: var(--border-color-ghoul);
-    --card-bg: var(--card-bg-ghoul);
-    --panel-shadow: var(--panel-shadow-ghoul);
-}
+/* ===========================================
+   MOBILE-FIRST PROFILE PAGE STYLES
+   =========================================== */
 
-/* ===== GLOBAL STYLES ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ===========================================
+   PROFILE CONTAINER - MOBILE FIRST
+   =========================================== */
 
-/* ===== NAVBAR ===== */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(10px);
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode (Dark) Navbar */
-body.ghoul-mode .navbar {
-    background: rgba(10, 10, 10, 0.9);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Human Mode (Light) Navbar */
-body:not(.ghoul-mode) .navbar {
-    background: rgba(245, 245, 247, 0.9);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.mini-mask {
-    width: 40px;
-    height: 40px;
-    filter: drop-shadow(0 0 5px rgba(220, 20, 60, 0.7));
-}
-
-.nav-links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-}
-
-.nav-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-/* Ghoul Mode Nav Links */
-body.ghoul-mode .nav-links a:hover {
-    color: var(--text-primary-ghoul);
-    background: rgba(220, 20, 60, 0.1);
-}
-
-body.ghoul-mode .nav-links a.active {
-    color: var(--accent-color-ghoul);
-}
-
-body.ghoul-mode .nav-links a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--accent-color-ghoul);
-}
-
-/* Human Mode Nav Links */
-body:not(.ghoul-mode) .nav-links a:hover {
-    color: var(--text-primary-human);
-    background: rgba(44, 123, 229, 0.1);
-}
-
-body:not(.ghoul-mode) .nav-links a.active {
-    color: var(--accent-color-human);
-}
-
-body:not(.ghoul-mode) .nav-links a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--accent-color-human);
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-#logout-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-/* Ghoul Mode Logout Button */
-body.ghoul-mode #logout-btn {
-    background: rgba(220, 20, 60, 0.2);
-    color: var(--text-primary-ghoul);
-    border: 1px solid var(--accent-color-ghoul);
-}
-
-body.ghoul-mode #logout-btn:hover {
-    background: rgba(220, 20, 60, 0.4);
-}
-
-/* Human Mode Logout Button */
-body:not(.ghoul-mode) #logout-btn {
-    background: rgba(44, 123, 229, 0.1);
-    color: var(--text-primary-human);
-    border: 1px solid var(--accent-color-human);
-}
-
-body:not(.ghoul-mode) #logout-btn:hover {
-    background: rgba(44, 123, 229, 0.2);
-}
-
-/* Mode toggle */
-.mode-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, #a0a0a0, #d0d0d0);
-    transition: .4s;
-    border-radius: 34px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Human Mode (Light) Switch */
-body:not(.ghoul-mode) input:not(:checked) + .slider {
-    background: linear-gradient(90deg, #a0a0a0, #d0d0d0);
-}
-
-/* Ghoul Mode (Dark) Switch */
-body.ghoul-mode input:checked + .slider,
-body:not(.ghoul-mode) input:checked + .slider {
-    background: linear-gradient(90deg, var(--accent-dark-ghoul), var(--accent-color-ghoul));
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-    }
-    
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-    }
-    
-    .nav-actions {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .mode-toggle {
-        order: -1;
-    }
-}
-
-/* ===== PROFILE CONTAINER ===== */
 .profile-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-4);
 }
 
-/* ===== PROFILE HEADER ===== */
+/* ===========================================
+   PROFILE CARD - MOBILE FIRST
+   =========================================== */
+
+.profile-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow);
+  border: var(--border-width) solid var(--color-border-light);
+}
+
 .profile-header {
-    position: relative;
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 2.5rem;
-    margin-bottom: 2.5rem;
-    padding: 2.5rem;
-    border-radius: var(--border-radius-lg);
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-effect);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--panel-shadow);
-    overflow: hidden;
-    transition: var(--transition-normal);
-}
-
-.profile-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--accent-color), transparent);
-    z-index: 1;
-}
-
-.profile-header:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.9), 0 0 20px var(--accent-glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--space-6);
 }
 
 .profile-avatar {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid var(--accent-color);
-    box-shadow: 0 0 35px var(--accent-glow);
-    transition: var(--transition-normal);
-    z-index: 2;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition-fast);
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
 }
 
 .profile-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: contrast(1.05);
-    transition: var(--transition-normal);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.profile-avatar::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-color);
-    opacity: 0.5;
-    animation: pulse 2s infinite;
-    pointer-events: none;
+.profile-name {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
 }
 
-.profile-avatar:hover img {
-    transform: scale(1.05);
+.profile-status {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--border-radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  background-color: var(--color-primary);
+  color: white;
+  display: inline-block;
 }
 
-.upload-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 0.75rem;
-    text-align: center;
-    opacity: 0;
-    transition: var(--transition-normal);
-    transform: translateY(100%);
+.profile-details {
+  margin-bottom: var(--space-6);
 }
 
-.profile-avatar:hover .upload-overlay {
-    opacity: 1;
-    transform: translateY(0);
+.detail-item {
+  padding: var(--space-4) 0;
+  border-bottom: var(--border-width) solid var(--color-border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.upload-btn {
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+.detail-item:last-child {
+  border-bottom: none;
 }
 
-.upload-btn i {
-    color: var(--accent-color);
+.detail-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
 }
 
-.upload-btn:hover {
-    color: var(--accent-color);
+.detail-value {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
 }
 
-/* Profile info styles */
-.profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    position: relative;
+.profile-actions {
+  margin-top: auto;
 }
 
-.profile-info h1 {
-    font-size: 3rem;
-    margin: 0;
-    color: var(--text-primary);
-    text-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
-    letter-spacing: 1px;
-    font-weight: 700;
-    position: relative;
-    display: inline-block;
-    max-width: fit-content;
+.profile-actions .btn {
+  width: 100%;
 }
 
-.profile-info h1::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -6px;
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-color), transparent);
-    border-radius: 2px;
+/* ===========================================
+   STATS CARD - MOBILE FIRST
+   =========================================== */
+
+.stats-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow);
+  border: var(--border-width) solid var(--color-border-light);
 }
 
-.threat-level {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 0.75rem 0;
+.stats-card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-6);
+  text-align: center;
 }
 
-.threat-level > span {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    letter-spacing: 0.5px;
-}
-
-.threat-meter {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1.4rem;
-    border-radius: 12px;
-    font-weight: 700;
-    color: white;
-    position: relative;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    overflow: hidden;
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode Threat Meter */
-body.ghoul-mode .threat-meter {
-    background: var(--accent-dark-ghoul);
-    box-shadow: 0 0 15px var(--accent-glow-ghoul);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Human Mode Threat Meter */
-body:not(.ghoul-mode) .threat-meter {
-    background: var(--accent-dark-human);
-    box-shadow: 0 0 15px var(--accent-glow-human);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.threat-meter::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, 
-        rgba(255,255,255,0) 0%, 
-        rgba(255,255,255,0.1) 25%, 
-        rgba(255,255,255,0.4) 50%, 
-        rgba(255,255,255,0.1) 75%,
-        rgba(255,255,255,0) 100%);
-    animation: shine 3s infinite;
-    z-index: 1;
-}
-
-.threat-value {
-    position: relative;
-    z-index: 2;
-    transition: transform 0.3s ease;
-    font-size: 1.2rem;
-}
-
-.user-status {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--text-secondary);
-    font-size: 1rem;
-    position: relative;
-    max-width: fit-content;
-}
-
-.user-status i {
-    color: var(--accent-color);
-}
-
-#days-active {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-/* ===== PROFILE CONTENT LAYOUT ===== */
-.profile-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.profile-section {
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-effect);
-    border-radius: var(--border-radius-md);
-    padding: 2rem;
-    box-shadow: var(--panel-shadow);
-    border: 1px solid var(--border-color);
-    transition: var(--transition-normal);
-    position: relative;
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Ghoul Mode Section Hover */
-body.ghoul-mode .profile-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
-    border-color: rgba(220, 20, 60, 0.5);
-}
-
-/* Human Mode Section Hover */
-body:not(.ghoul-mode) .profile-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
-    border-color: rgba(44, 123, 229, 0.5);
-}
-
-.profile-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background: linear-gradient(90deg, var(--accent-color), transparent);
-    opacity: 0.7;
-    transition: var(--transition-normal);
-}
-
-.profile-section h2 {
-    margin-top: 0;
-    margin-bottom: 1.75rem;
-    color: var(--text-primary);
-    font-size: 1.6rem;
-    position: relative;
-    padding-bottom: 0.75rem;
-    display: inline-block;
-}
-
-.profile-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-color) 0%, transparent 100%);
-    border-radius: 3px;
-    box-shadow: 0 0 8px var(--accent-glow);
-}
-
-/* ===== KAGUNE PROGRESS SECTION ===== */
-.kagune-progress {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    flex-grow: 1;
-}
-
-.kagune-type {
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    padding: 1rem;
-    border-radius: var(--border-radius-sm);
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode Kagune Type */
-body.ghoul-mode .kagune-type {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-body.ghoul-mode .kagune-type:hover {
-    background: rgba(0, 0, 0, 0.4);
-    transform: translateX(5px);
-}
-
-/* Human Mode Kagune Type */
-body:not(.ghoul-mode) .kagune-type {
-    background: rgba(240, 240, 245, 0.6);
-    border: 1px solid rgba(0, 0, 0, 0.03);
-}
-
-body:not(.ghoul-mode) .kagune-type:hover {
-    background: rgba(240, 240, 245, 0.8);
-    transform: translateX(5px);
-}
-
-.kagune-name {
-    font-weight: 700;
-    color: var(--text-primary);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.kagune-name::before {
-    content: '';
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 10px;
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode Kagune Name Indicator */
-body.ghoul-mode .kagune-name::before {
-    background-color: var(--accent-color-ghoul);
-    box-shadow: 0 0 8px var(--accent-glow-ghoul);
-}
-
-/* Human Mode Kagune Name Indicator */
-body:not(.ghoul-mode) .kagune-name::before {
-    background-color: var(--accent-color-human);
-    box-shadow: 0 0 8px var(--accent-glow-human);
-}
-
-.progress-percentage {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 400;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode Progress Bar */
-body.ghoul-mode .progress-bar {
-    background: rgba(40, 40, 40, 0.7);
-}
-
-/* Human Mode Progress Bar */
-body:not(.ghoul-mode) .progress-bar {
-    background: rgba(220, 220, 225, 0.7);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    position: relative;
-}
-
-.progress {
-    height: 100%;
-    border-radius: 10px;
-    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-    position: relative;
-}
-
-/* Ghoul Mode Progress */
-body.ghoul-mode .progress {
-    background: linear-gradient(90deg, var(--accent-color-ghoul), var(--accent-dark-ghoul));
-}
-
-/* Human Mode Progress */
-body:not(.ghoul-mode) .progress {
-    background: linear-gradient(90deg, var(--accent-color-human), var(--accent-dark-human));
-}
-
-.progress::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        to bottom, 
-        rgba(255, 255, 255, 0.15) 0%, 
-        rgba(255, 255, 255, 0) 100%
-    );
-    pointer-events: none;
-}
-
-/* Ghoul Mode Unlocked Kagune */
-body.ghoul-mode .kagune-type.unlocked .kagune-name {
-    color: var(--accent-color-ghoul);
-    text-shadow: 0 0 5px var(--accent-glow-ghoul);
-}
-
-/* Human Mode Unlocked Kagune */
-body:not(.ghoul-mode) .kagune-type.unlocked .kagune-name {
-    color: var(--accent-color-human);
-    text-shadow: 0 0 5px var(--accent-glow-human);
-}
-
-.kagune-type.unlocked .kagune-name::before {
-    animation: pulse 2s infinite;
-}
-
-/* Ghoul Mode Locked Kagune */
-body.ghoul-mode .kagune-type.locked .kagune-name {
-    color: rgba(150, 150, 150, 0.7);
-}
-
-body.ghoul-mode .kagune-type.locked .kagune-name::before {
-    background-color: #444;
-    box-shadow: none;
-}
-
-body.ghoul-mode .kagune-type.locked .progress {
-    background: #333;
-}
-
-/* Human Mode Locked Kagune */
-body:not(.ghoul-mode) .kagune-type.locked .kagune-name {
-    color: rgba(100, 100, 100, 0.8);
-}
-
-body:not(.ghoul-mode) .kagune-type.locked .kagune-name::before {
-    background-color: #ccc;
-    box-shadow: none;
-}
-
-body:not(.ghoul-mode) .kagune-type.locked .progress {
-    background: #aaa;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-/* ===== STATISTICS SECTION ===== */
-.stats-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-top: 0.5rem;
-    flex-grow: 1;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-4);
 }
 
 .stat-item {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    padding: 1.2rem 1.5rem;
-    border-radius: var(--border-radius-sm);
-    transition: var(--transition-normal);
-    overflow: hidden;
+  text-align: center;
+  padding: var(--space-4);
+  background-color: var(--color-accent);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-fast);
+  border: var(--border-width) solid var(--color-border-light);
 }
 
-.stat-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 5px;
-    height: 100%;
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode Stat Item */
-body.ghoul-mode .stat-item {
-    background: rgba(15, 15, 15, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-body.ghoul-mode .stat-item::before {
-    background: var(--accent-dark-ghoul);
-}
-
-/* Human Mode Stat Item */
-body:not(.ghoul-mode) .stat-item {
-    background: rgba(240, 240, 245, 0.6);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-body:not(.ghoul-mode) .stat-item::before {
-    background: var(--accent-dark-human);
-}
-
-/* Ghoul Mode Stat Item Hover */
-body.ghoul-mode .stat-item:hover {
-    transform: translateY(-3px);
-    border-color: var(--border-color-ghoul);
-    background: rgba(20, 10, 15, 0.5);
-}
-
-body.ghoul-mode .stat-item:hover::before {
-    background: var(--accent-color-ghoul);
-    box-shadow: 0 0 15px var(--accent-glow-ghoul);
-}
-
-/* Human Mode Stat Item Hover */
-body:not(.ghoul-mode) .stat-item:hover {
-    transform: translateY(-3px);
-    border-color: var(--border-color-human);
-    background: rgba(235, 240, 255, 0.8);
-}
-
-body:not(.ghoul-mode) .stat-item:hover::before {
-    background: var(--accent-color-human);
-    box-shadow: 0 0 15px var(--accent-glow-human);
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 500;
-    margin-left: 5px;
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background-color: var(--bg-primary);
 }
 
 .stat-value {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--text-primary);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+  display: block;
 }
 
-/* Ghoul Mode Stat Value */
-body.ghoul-mode .stat-value {
-    text-shadow: 0 0 10px rgba(220, 20, 60, 0.2);
+.stat-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
-/* Human Mode Stat Value */
-body:not(.ghoul-mode) .stat-value {
-    text-shadow: 0 0 10px rgba(44, 123, 229, 0.2);
-    position: relative;
-    display: inline-block;
-    transition: var(--transition-normal);
+/* ===========================================
+   EDIT PROFILE MODAL - MOBILE FIRST
+   =========================================== */
+
+.avatar-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  overflow: hidden;
+  margin: var(--space-4) auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
 }
 
-/* Ghoul Mode Stat Value Hover */
-body.ghoul-mode .stat-item:hover .stat-value {
-    color: var(--accent-color-ghoul);
-    transform: scale(1.05);
-    text-shadow: 0 0 15px var(--accent-glow-ghoul);
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Human Mode Stat Value Hover */
-body:not(.ghoul-mode) .stat-item:hover .stat-value {
-    color: var(--accent-color-human);
-    transform: scale(1.05);
-    text-shadow: 0 0 15px var(--accent-glow-human);
+/* ===========================================
+   GHOUL MODE STYLES
+   =========================================== */
+
+[data-mode="ghoul"] .profile-status {
+  background-color: var(--ghoul-primary);
+  box-shadow: 0 0 8px rgb(255 0 0 / 0.3);
 }
 
-/* ===== SETTINGS FORM SECTION ===== */
-.settings-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-    flex-grow: 1;
+[data-mode="ghoul"] .stat-item {
+  background-color: var(--ghoul-accent);
+  border-color: rgb(255 0 0 / 0.2);
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+[data-mode="ghoul"] .stat-value {
+  color: var(--ghoul-primary);
+  text-shadow: 0 0 5px rgb(255 0 0 / 0.3);
 }
 
-.form-group label {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-left: 5px;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+[data-mode="ghoul"] .profile-avatar {
+  box-shadow: 0 0 20px rgb(255 0 0 / 0.3);
 }
 
-.form-group label i {
-    color: var(--accent-color);
-    font-size: 0.8rem;
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+/* Small devices (640px and up) */
+@media (min-width: 640px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+    padding: var(--space-6);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .stat-item {
+    padding: var(--space-6);
+  }
+
+  .profile-card,
+  .stats-card {
+    padding: var(--space-8);
+  }
 }
 
-.form-group input {
-    padding: 1rem 1.2rem;
-    border-radius: var(--border-radius-sm);
-    font-size: 1rem;
-    transition: var(--transition-normal);
-    letter-spacing: 0.3px;
+/* Medium devices (768px and up) */
+@media (min-width: 768px) {
+  .profile-container {
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-8);
+    padding: var(--space-8);
+  }
+
+  .profile-avatar {
+    width: 140px;
+    height: 140px;
+    font-size: 3.5rem;
+  }
+
+  .profile-name {
+    font-size: var(--text-3xl);
+  }
 }
 
-/* Ghoul Mode Form Inputs */
-body.ghoul-mode .form-group input {
-    border: 1px solid rgba(60, 60, 60, 0.5);
-    background: rgba(25, 25, 25, 0.7);
-    color: var(--text-primary-ghoul);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+/* Large devices (1024px and up) */
+@media (min-width: 1024px) {
+  .profile-container {
+    gap: var(--space-10);
+    padding: var(--space-10);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .profile-card,
+  .stats-card {
+    padding: var(--space-10);
+  }
 }
 
-body.ghoul-mode .form-group input:focus {
-    outline: none;
-    border-color: var(--accent-color-ghoul);
-    box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2);
-    background: rgba(35, 25, 28, 0.8);
+/* ===========================================
+   ACCESSIBILITY & INTERACTIONS
+   =========================================== */
+
+.profile-avatar:focus,
+.stat-item:focus,
+.btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
-/* Human Mode Form Inputs */
-body:not(.ghoul-mode) .form-group input {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.7);
-    color: var(--text-primary-human);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+/* Loading states */
+.profile-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12);
+  text-align: center;
 }
 
-body:not(.ghoul-mode) .form-group input:focus {
-    outline: none;
-    border-color: var(--accent-color-human);
-    box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.05);
-    background: rgba(250, 250, 255, 0.9);
-}
-
-.form-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.form-group button {
-    padding: 1rem 1.8rem;
-    border-radius: var(--border-radius-sm);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition-normal);
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-}
-
-#update-profile {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    border: none;
-}
-
-/* Ghoul Mode Update Button */
-body.ghoul-mode #update-profile {
-    background: var(--accent-color-ghoul);
-    color: white;
-    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
-}
-
-body.ghoul-mode #update-profile:hover {
-    background: var(--accent-hover-ghoul);
-    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.6);
-}
-
-/* Human Mode Update Button */
-body:not(.ghoul-mode) #update-profile {
-    background: var(--accent-color-human);
-    color: white;
-    box-shadow: 0 4px 15px rgba(44, 123, 229, 0.4);
-}
-
-body:not(.ghoul-mode) #update-profile:hover {
-    background: var(--accent-hover-human);
-    box-shadow: 0 6px 20px rgba(44, 123, 229, 0.6);
-}
-
-#update-profile i {
-    font-size: 0.9rem;
-}
-
-#update-profile:hover {
-    background: var(--accent-hover);
-    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.6);
-    transform: translateY(-2px);
-}
-
-#update-profile:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(220, 20, 60, 0.4);
-}
-
-#change-password {
-    background: transparent;
-    border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    min-width: 180px;
-}
-
-#change-password i {
-    font-size: 0.9rem;
-}
-
-#change-password::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: rgba(220, 20, 60, 0.15);
-    transition: width 0.3s ease;
-    z-index: -1;
-}
-
-#change-password:hover {
-    color: white;
-}
-
-#change-password:hover::before {
-    width: 100%;
-}
-
-/* ===== AUDIO CONTROLS ===== */
-.audio-controls {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    z-index: 100;
-}
-
-#toggle-audio {
-    background: rgba(20, 20, 20, 0.8);
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition-normal);
-    font-size: 1.6rem;
-    color: var(--accent-color);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4), 0 0 0 rgba(220, 20, 60, 0);
-    position: relative;
-}
-
-#toggle-audio::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 50%;
-    border: 2px solid rgba(220, 20, 60, 0.5);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-/* Ghoul Mode Audio Button Hover */
-body.ghoul-mode #toggle-audio:hover {
-    background: rgba(40, 10, 15, 0.8);
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(220, 20, 60, 0.5);
-    color: white;
-}
-
-/* Human Mode Audio Button Hover */
-body:not(.ghoul-mode) #toggle-audio:hover {
-    background: rgba(220, 230, 250, 0.8);
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 0 0 15px rgba(44, 123, 229, 0.5);
-    color: var(--text-primary-human);
-}
-
-#toggle-audio:hover::before {
-    opacity: 1;
-    animation: pulse-border 2s infinite;
-}
-
-@keyframes pulse-border {
-    0% { transform: scale(1); opacity: 1; }
-    70% { transform: scale(1.15); opacity: 0; }
-    100% { transform: scale(1); opacity: 0; }
-}
-
-.hidden {
-    display: none;
-}
-
-/* ===== UTILITY CLASSES ===== */
-.hidden {
-    display: none;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes pulse-border {
-    0% { transform: scale(1); opacity: 1; }
-    70% { transform: scale(1.15); opacity: 0; }
-    100% { transform: scale(1); opacity: 0; }
-}
-
-@keyframes shine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 1024px) {
-    .profile-content {
-        grid-template-columns: 1fr;
-    }
-    
-    .profile-header {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 1.5rem;
-    }
-    
-    .profile-avatar {
-        margin: 0 auto;
-    }
-    
-    .profile-info h1::after,
-    .profile-section h2::after {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
-    .profile-section h2 {
-        text-align: center;
-        display: block;
-        width: 100%;
-    }
-    
-    .user-status {
-        margin: 0 auto;
-        justify-content: center;
-    }
-    
-    .threat-level {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .profile-container {
-        padding: 1.5rem 1rem;
-    }
-    
-    .profile-avatar {
-        width: 150px;
-        height: 150px;
-    }
-    
-    .profile-info h1 {
-        font-size: 2.2rem;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .stat-item {
-        padding: 1rem;
-    }
-    
-    .stat-value {
-        font-size: 1.8rem;
-    }
-    
-    .profile-section {
-        padding: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .profile-info h1 {
-        font-size: 1.8rem;
-    }
-    
-    .stats-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .profile-section h2 {
-        font-size: 1.4rem;
-    }
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes shine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-/* Background effect for profile page */
-body {
-    background-color: var(--primary-bg);
-    background-attachment: fixed;
-    position: relative;
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-primary);
-    transition: var(--transition-normal);
-}
-
-/* Ghoul Mode Background */
-body.ghoul-mode {
-    background-image: 
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.374zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828zM11.03 0L7.372 3.657 8.787 5.07 13.857 0H11.03zm32.284 0L49.8 6.485 48.384 7.9l-7.9-7.9h2.83zm-24.596 0l-7.486 7.485 1.415 1.414 7.9-7.9h-1.83zm16.97 0l-9.9 9.9 1.415 1.414L40.3 0h-4.612zm-7.457 0l-6.486 6.485 1.415 1.414 6.9-6.9h-1.83zm-9.9 0l-3.843 3.843 1.414 1.414L19.157 0h-2.83zm3.015 0l13.9 13.9-1.414 1.414L3.544 0h2.743zm13.9 0l-1.414 1.414L26.544 10.3 25.13 8.887l-2.83 2.83 1.415 1.413L23.714 13.13l8.485-8.485-1.414-1.414L27.9 6.114l-1.414-1.414 1.414-1.414-1.414-1.414-1.415 1.414 1.414 1.414-7.07 7.07L13 4.544V0h2.743zm10.243 8.486l-1.414 1.414-3.85-3.85 1.414-1.415 3.85 3.85zm-3.85-3.85L27.9 0h-1.827l-5.657 5.657 1.414 1.414L26.544 2.36l1.414 1.414L25.13 6.6l1.414 1.414 3.85-3.85-1.414-1.414z' fill='%23222222' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E"),
-        radial-gradient(circle at top right, rgba(140, 10, 30, 0.2) 0%, transparent 70%),
-        radial-gradient(circle at bottom left, rgba(20, 20, 40, 0.2) 0%, transparent 70%);
-}
-
-/* Human Mode Background */
-body:not(.ghoul-mode) {
-    background-image: 
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.374zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828zM11.03 0L7.372 3.657 8.787 5.07 13.857 0H11.03zm32.284 0L49.8 6.485 48.384 7.9l-7.9-7.9h2.83zm-24.596 0l-7.486 7.485 1.415 1.414 7.9-7.9h-1.83zm16.97 0l-9.9 9.9 1.415 1.414L40.3 0h-4.612zm-7.457 0l-6.486 6.485 1.415 1.414 6.9-6.9h-1.83zm-9.9 0l-3.843 3.843 1.414 1.414L19.157 0h-2.83zm3.015 0l13.9 13.9-1.414 1.414L3.544 0h2.743zm13.9 0l-1.414 1.414L26.544 10.3 25.13 8.887l-2.83 2.83 1.415 1.413L23.714 13.13l8.485-8.485-1.414-1.414L27.9 6.114l-1.414-1.414 1.414-1.414-1.414-1.414-1.415 1.414 1.414 1.414-7.07 7.07L13 4.544V0h2.743zm10.243 8.486l-1.414 1.414-3.85-3.85 1.414-1.415 3.85 3.85zm-3.85-3.85L27.9 0h-1.827l-5.657 5.657 1.414 1.414L26.544 2.36l1.414 1.414L25.13 6.6l1.414 1.414 3.85-3.85-1.414-1.414z' fill='%23333333' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E"),
-        radial-gradient(circle at top right, rgba(44, 123, 229, 0.1) 0%, transparent 70%),
-        radial-gradient(circle at bottom left, rgba(100, 100, 200, 0.1) 0%, transparent 70%);
-}
-
-/* Loading animation for avatar */
-.loading {
-    position: relative;
-}
-
-.loading::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    border-radius: 50%;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    border-top-color: var(--accent-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    z-index: 11;
+.profile-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-accent);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-4);
 }
 
 @keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Glitch effect for theme transitions */
-body.glitching {
-    animation: glitch 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
 
-@keyframes glitch {
-    0% {
-        filter: blur(0) brightness(1) hue-rotate(0deg);
-        transform: translateX(0);
-    }
-    20% {
-        filter: blur(3px) brightness(1.2) hue-rotate(10deg);
-        transform: translateX(-5px);
-    }
-    40% {
-        filter: blur(1px) brightness(0.9) hue-rotate(-5deg);
-        transform: translateX(5px);
-    }
-    60% {
-        filter: blur(2px) brightness(1.1) hue-rotate(5deg);
-        transform: translateX(-3px);
-    }
-    80% {
-        filter: blur(1px) brightness(0.95) hue-rotate(-10deg);
-        transform: translateX(2px);
-    }
-    100% {
-        filter: blur(0) brightness(1) hue-rotate(0deg);
-        transform: translateX(0);
-    }
-}
-
-/* Additional theme overrides for profile page */
-/* Human Mode (Light) overrides */
-body:not(.ghoul-mode) .profile-card,
-body:not(.ghoul-mode) .rc-panel,
-body:not(.ghoul-mode) .stats-card,
-body:not(.ghoul-mode) .kagune-progress-container,
-body:not(.ghoul-mode) .modal-content {
-    background: var(--card-bg-human);
-    color: var(--text-primary-human);
-    border-color: var(--border-color-human);
-    box-shadow: var(--panel-shadow-human);
-}
-
-body:not(.ghoul-mode) .button {
-    background: var(--accent-color-human);
-    color: white;
-}
-
-body:not(.ghoul-mode) .button:hover {
-    background: var(--accent-hover-human);
-}
-
-body:not(.ghoul-mode) .input-field,
-body:not(.ghoul-mode) .textarea {
-    background: rgba(255, 255, 255, 0.8);
-    color: var(--text-primary-human);
-    border-color: var(--border-color-human);
-}
-
-body:not(.ghoul-mode) .input-field:focus,
-body:not(.ghoul-mode) .textarea:focus {
-    border-color: var(--accent-color-human);
-    box-shadow: 0 0 0 2px var(--accent-glow-human);
-}
-
-/* No changes needed for theme switching logic. */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.mb-4 { margin-bottom: var(--space-4); }
+.mt-4 { margin-top: var(--space-4); }

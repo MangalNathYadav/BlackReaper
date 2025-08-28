@@ -1,0 +1,543 @@
+/* 
+   BlackReaper v2 - Main CSS Styles
+   Inspired by Tokyo Ghoul
+*/
+
+/* Base styles and CSS variables */
+:root {
+  /* Human Mode Colors */
+  --human-bg: #f8f9fa;
+  --human-text: #212529;
+  --human-primary: #0d6efd;
+  --human-primary-rgb: 13, 110, 253;
+  --human-secondary: #6c757d;
+  --human-danger: #dc3545;
+  --human-danger-rgb: 220, 53, 69;
+  --human-success: #198754;
+  --human-card: #ffffff;
+  --human-border: #dee2e6;
+  --human-accent: #e9ecef;
+  --human-muted: #6c757d;
+  
+  /* Ghoul Mode Colors */
+  --ghoul-bg: #121212;
+  --ghoul-text: #e0e0e0;
+  --ghoul-primary: #ff0033;
+  --ghoul-primary-rgb: 255, 0, 51;
+  --ghoul-secondary: #444444;
+  --ghoul-danger: #aa0000;
+  --ghoul-danger-rgb: 170, 0, 0;
+  --ghoul-success: #006622;
+  --ghoul-card: #1e1e1e;
+  --ghoul-border: #333333;
+  --ghoul-accent: #2a2a2a;
+  --ghoul-muted: #888888;
+  
+  /* Default is Human mode */
+  --bg-color: var(--human-bg);
+  --text-color: var(--human-text);
+  --primary-color: var(--human-primary);
+  --primary-color-rgb: var(--human-primary-rgb);
+  --secondary-color: var(--human-secondary);
+  --danger-color: var(--human-danger);
+  --danger-color-rgb: var(--human-danger-rgb);
+  --success-color: var(--human-success);
+  --card-bg: var(--human-card);
+  --border-color: var(--human-border);
+  --accent-color: var(--human-accent);
+  --muted-color: var(--human-muted);
+
+  /* Font sizes */
+  --font-xs: 0.75rem;   /* 12px */
+  --font-sm: 0.875rem;  /* 14px */
+  --font-md: 1rem;      /* 16px */
+  --font-lg: 1.25rem;   /* 20px */
+  --font-xl: 1.5rem;    /* 24px */
+  --font-xxl: 2rem;     /* 32px */
+  
+  /* Spacing */
+  --space-xs: 0.25rem;  /* 4px */
+  --space-sm: 0.5rem;   /* 8px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.5rem;   /* 24px */
+  --space-xl: 2rem;     /* 32px */
+  
+  /* Border radius */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.5rem;  /* 8px */
+  --radius-lg: 1rem;    /* 16px */
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* Ghoul Mode Theme */
+body.ghoul-mode {
+  --bg-color: var(--ghoul-bg);
+  --text-color: var(--ghoul-text);
+  --primary-color: var(--ghoul-primary);
+  --primary-color-rgb: var(--ghoul-primary-rgb);
+  --secondary-color: var(--ghoul-secondary);
+  --danger-color: var(--ghoul-danger);
+  --danger-color-rgb: var(--ghoul-danger-rgb);
+  --success-color: var(--ghoul-success);
+  --card-bg: var(--ghoul-card);
+  --border-color: var(--ghoul-border);
+  --accent-color: var(--ghoul-accent);
+  --muted-color: var(--ghoul-muted);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  opacity: 0.9;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--font-md);
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  gap: 8px;
+}
+
+.btn i {
+  font-size: 0.9em;
+}
+
+.btn.primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.btn.secondary {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.btn.danger {
+  background-color: var(--danger-color);
+  color: #fff;
+}
+
+.btn.success {
+  background-color: var(--success-color);
+  color: #fff;
+}
+
+.btn.outline-primary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.btn.outline-secondary {
+  background-color: transparent;
+  color: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: var(--font-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: border-color var(--transition-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--secondary-color);
+}
+
+.input-with-icon input {
+  padding-left: 2.75rem;
+}
+
+/* Card Styles */
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  transition: all var(--transition-normal);
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* Animation Classes */
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Layout Structure */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  transition: all var(--transition-normal);
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 280px;
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  transition: all var(--transition-normal);
+  z-index: 10;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-md);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 var(--space-md) 0;
+  color: var(--primary-color);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.rc-cells {
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 auto 0;
+}
+
+.nav-links li {
+  margin-bottom: 5px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-md);
+  gap: 10px;
+}
+
+.nav-links li a:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.nav-links li a.active {
+  background-color: rgba(var(--primary-color-rgb), 0.15);
+  color: var(--primary-color);
+}
+
+.nav-links li i {
+  width: 20px;
+  text-align: center;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  padding: var(--space-xl);
+  transition: all var(--transition-normal);
+}
+
+/* Mode Toggle Styles */
+.mode-toggle-wrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.mode-toggle {
+  cursor: pointer;
+  width: 130px;
+  height: 48px;
+}
+
+.mode-toggle-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.mode-toggle-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all var(--transition-normal);
+}
+
+.mode-toggle-slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+}
+
+.mode-toggle-knob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.ghoul-mode .mode-toggle-knob {
+  transform: translateX(78px);
+  background: var(--primary-color);
+}
+
+.mode-toggle-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.mode-toggle-icons .human-icon,
+.mode-toggle-icons .ghoul-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.mode-toggle-icons .human-icon {
+  margin-right: auto;
+}
+
+.mode-toggle-icons .ghoul-icon {
+  margin-left: auto;
+}
+
+.human-mode .mode-toggle-icons .human-icon {
+  opacity: 1;
+}
+
+.ghoul-mode .mode-toggle-icons .ghoul-icon {
+  opacity: 1;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .show-sidebar-btn {
+    display: block;
+  }
+}
+
+/* Utils */
+.accent-text {
+  color: var(--primary-color);
+}
+
+.hidden {
+  display: none;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.toast {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-left: 4px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  max-width: 350px;
+  animation: slideIn 0.3s ease forwards;
+}
+
+.toast.success {
+  border-left-color: var(--success-color);
+}
+
+.toast.error {
+  border-left-color: var(--danger-color);
+}
+
+.toast-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.toast-message {
+  font-size: var(--font-sm);
+  color: var(--muted-color);
+}
+
+.toast-close {
+  font-size: 16px;
+  color: var(--muted-color);
+  cursor: pointer;
+  padding: 4px;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

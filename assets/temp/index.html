@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Vault | Lehninger Principles of Biochemistry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e6e9f9;
+            --text: #333333;
+            --text-light: #666666;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background-color: var(--bg);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .book-cover {
+            width: 180px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            display: block;
+        }
+        
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .chapter-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border);
+        }
+        
+        .chapter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chapter-number {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .chapter-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .download-btn:hover {
+            background-color: #3a56d4;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Book Vault</h1>
+            <p class="subtitle">Lehninger Principles of Biochemistry - Complete Chapter Collection</p>
+            <img src="book-cover.jpg" alt="Lehninger Principles of Biochemistry Cover" class="book-cover">
+        </header>
+        
+        <main>
+            <div class="chapters-grid">
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 1</div>
+                    <h3 class="chapter-title">Foundation of Biochemistry</h3>
+                    <a href="chapter1 foundation of biochemistry.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 2</div>
+                    <h3 class="chapter-title">Structure and Catalysts</h3>
+                    <a href="chapter2 structure and catalysts.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 3</div>
+                    <h3 class="chapter-title">Amino Acids, Peptides and Proteins</h3>
+                    <a href="chapter3 amino acids peptides and proteins.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 4</div>
+                    <h3 class="chapter-title">3D Structure of Protein</h3>
+                    <a href="chapter4 3d structure of protein.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 5</div>
+                    <h3 class="chapter-title">Protein Function</h3>
+                    <a href="chapter5 protein function.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 6</div>
+                    <h3 class="chapter-title">Enzymes</h3>
+                    <a href="chapter6 enzymes.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 7</div>
+                    <h3 class="chapter-title">Carbohydrates and Glycobiology</h3>
+                    <a href="chapter7 carbohydrates and glycobiology.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 8</div>
+                    <h3 class="chapter-title">Nucleotides and Nucleic Acids</h3>
+                    <a href="chapter8 nucleotides and nucleic acids.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 9</div>
+                    <h3 class="chapter-title">DNA Based Info Technologies</h3>
+                    <a href="chapter9 dna based info technologies.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 10</div>
+                    <h3 class="chapter-title">Lipids</h3>
+                    <a href="chapter10 lipids.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 11</div>
+                    <h3 class="chapter-title">Biological Membranes and Transport</h3>
+                    <a href="chapter11 biological membranes and transport.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 12</div>
+                    <h3 class="chapter-title">Biosignaling</h3>
+                    <a href="chapter12 biosignaling.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 13</div>
+                    <h3 class="chapter-title">Bioenergetics and Metabolism</h3>
+                    <a href="chapter13 bioenergetics and metabolism.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 14</div>
+                    <h3 class="chapter-title">Glycolysis, Glyconeogenesis and Pentose Phosphate Pathway</h3>
+                    <a href="chapter14 glycolysis glyconeogenesis and pentose phosphate pathway.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 15</div>
+                    <h3 class="chapter-title">Principles of Metabolic Regulation: Glucose and Glycogen</h3>
+                    <a href="chapter15 princples of metabolic regulation glucose and glycogen.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 16</div>
+                    <h3 class="chapter-title">The Citric Acid Cycle</h3>
+                    <a href="chapter16 the citric acid cycle.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 17</div>
+                    <h3 class="chapter-title">Fatty Acid Catabolism</h3>
+                    <a href="chapter17 fatty acid catabolism.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 18</div>
+                    <h3 class="chapter-title">Amino Acid Oxidation and Production of Urea</h3>
+                    <a href="chapter18 amino acid oxidation and production of urea.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 19</div>
+                    <h3 class="chapter-title">Oxidative Phosphorylation and Photophosphorylation</h3>
+                    <a href="chapter19 oxidative phosphorylation and photophysplayion.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 20</div>
+                    <h3 class="chapter-title">Carbohydrates Biosynthesis in Plants and Bacteria</h3>
+                    <a href="chapter20 carbohydrates biosynthesis in plants and bacteria.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 21</div>
+                    <h3 class="chapter-title">Lipid Biosynthesis</h3>
+                    <a href="chapter21 Lipid biosynthesis.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 22</div>
+                    <h3 class="chapter-title">Biosynthesis of Amino Acids, Nucleotides and Related Molecules</h3>
+                    <a href="chapter22 Biosynthesis of amino acids nucleotides and related molecules.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 23</div>
+                    <h3 class="chapter-title">Hormonal Regulation and Integration of Mammalian Metabolism</h3>
+                    <a href="chapter23 harmonal regulation and integration of mammaliaan metabolism.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 24</div>
+                    <h3 class="chapter-title">DNA Replication</h3>
+                    <a href="chapter24 DNA replication.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 25</div>
+                    <h3 class="chapter-title">DNA Metabolism</h3>
+                    <a href="chapter25 DNA metabolism.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 26</div>
+                    <h3 class="chapter-title">RNA Metabolism</h3>
+                    <a href="chapter26 RNA metabolism.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 27</div>
+                    <h3 class="chapter-title">Protein Metabolism</h3>
+                    <a href="chapter27 Protein metabolism.pdf" class="download-btn">Download PDF</a>
+                </div>
+                
+                <div class="chapter-card">
+                    <div class="chapter-number">Chapter 28</div>
+                    <h3 class="chapter-title">Regulation of Gene Expression</h3>
+                    <a href="chapter28 Regulation of gene expression.pdf" class="download-btn">Download PDF</a>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Book Vault &copy; 2025 | Lehninger Principles of Biochemistry</p>
+            <p>For educational purposes only -- optimistic__thunder</p>
+        </footer>
+    </div>
+</body>
+</html>

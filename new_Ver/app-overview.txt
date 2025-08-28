@@ -1,0 +1,116 @@
+----------------------------------------
+Detailed HTML File Summaries
+----------------------------------------
+
+index.html
+- Purpose: Login/landing page.
+- Includes: PWA meta tags, global styles, Firebase SDK, mode toggle UI, logo, tagline, and authentication card.
+- No sidebar or navigation; focuses on user authentication.
+
+dashboard.html
+- Purpose: Main user dashboard.
+- Includes: PWA meta tags, global/dashboard styles, Firebase SDK, feature modules (notifications, achievements, theme, data sync), and custom scripts.
+- Internal CSS for dashboard widgets.
+- Sidebar: Standardized, with logo, user info, RC cell count, navigation links, mode toggle, and logout.
+- Main content: Pomodoro history, dashboard widgets, and cards.
+
+profile.html
+- Purpose: User profile management.
+- Includes: PWA meta tags, global/profile styles, Firebase SDK.
+- Internal CSS for profile layout and sidebar.
+- Sidebar: Standardized, with logo, user info, RC cell count, navigation links, mode toggle, and logout.
+- Main content: Profile header, avatar, stats, achievements, edit profile form.
+
+stats.html
+- Purpose: User statistics and analytics.
+- Includes: PWA meta tags, global/dashboard styles, Firebase SDK, Chart.js for data visualization.
+- Internal CSS for stats layout and sidebar.
+- Sidebar: Standardized, with logo, user info, RC cell count, navigation links, mode toggle, and logout.
+- Main content: Stats charts, analytics, and user progress.
+
+battle.html
+- Purpose: Kagune battle arena.
+- Includes: PWA meta tags, global/battle styles, Firebase SDK.
+- Internal CSS for battle layout and sidebar.
+- Sidebar: Standardized, with logo, user info, RC cell count, navigation links, mode toggle, and logout.
+- Main content: Battle system, opponent management, skills, and arena UI.
+
+journal.html
+- Purpose: User journal/log.
+- Includes: PWA meta tags, global/journal styles, Firebase SDK.
+- Internal CSS for journal layout and sidebar.
+- Sidebar: Standardized, with logo, user info, RC cell count, navigation links, mode toggle, and logout.
+- Main content: Journal entries, writing/viewing interface.
+
+admin.html
+- Purpose: Admin panel for system management.
+- Includes: PWA meta tags, global/admin styles, Firebase SDK.
+- Internal CSS for admin layout and cards.
+- Sidebar: Standardized, with logo, user info, RC cell count, navigation links, mode toggle, and logout.
+- Main content: System stats, seeding, user management, admin actions.
+BlackReaper App Overview
+========================
+
+Part 1: Main HTML Pages and Their Roles
+---------------------------------------
+1. index.html: Likely the landing or login page. No sidebar/navigation code found.
+2. dashboard.html: Main user dashboard. Implements the standardized sidebar with user info, RC cell count, navigation links, mode toggle, and logout. Loads user profile and RC data, and updates sidebar elements.
+3. profile.html: User profile management. Sidebar present, but previously had issues updating user info and RC count. Contains profile editing, avatar, and stats display.
+4. stats.html: User statistics and analytics. Sidebar present, displays user stats, RC count, and navigation. Uses Chart.js for visualizations.
+5. battle.html: Kagune battle arena. Sidebar present, shows user info and RC count. Implements battle system and opponent management.
+6. journal.html: User journal/log. Sidebar present, navigation links, likely for writing/viewing journal entries.
+7. admin.html: Admin panel. Sidebar standardized, navigation for dashboard, journal, battle, stats, profile. Manages system stats, seeding, and user management.
+8. loading.html: Loading screen, likely used for transitions or initial app load.
+
+Common Sidebar Implementation:
+- Sidebar includes: logo, user info (.user-name, #rc-cell-count), navigation links, mode toggle, logout button.
+- Sidebar is present in all main pages except index.html and loading.html.
+
+Part 2: Main JavaScript Files and Their Responsibilities
+-------------------------------------------------------
+1. assets/js/dashboard.js: Handles dashboard logic, sidebar updates, real-time sync for tasks, RC cell progress, and theme.
+2. assets/js/profile.js: Manages profile page, loads user profile, updates sidebar, profile editing, avatar, stats, achievements.
+3. assets/js/stats.js: Handles stats tracking and visualization (Chart.js), listens for stats updates, updates sidebar and stats UI.
+4. assets/js/battle.js: Manages battle system, user profile, opponents, battle logic, updates sidebar.
+5. assets/js/journal.js: Handles journal entries, user mode, and possibly updates sidebar.
+6. assets/js/admin.js: Admin panel logic, system stats, user management, seeding.
+7. firebase/ JS files: Core Firebase logic, authentication, database access, state management, UI helpers.
+
+Sidebar Data Flow:
+- Most pages fetch user profile and RC data via Firebase, then update sidebar elements.
+- Dashboard.js is the reference for correct sidebar updating logic.
+
+Part 3: Main CSS Files and Their Roles
+--------------------------------------
+1. assets/css/style.css: Global styles for the app, sidebar, navigation, responsive design.
+2. assets/css/profile.css: Styles specific to the profile page, avatar, profile header, stats, achievements, edit profile form.
+3. assets/css/dashboard-enhanced.css: Additional dashboard-specific styles, enhanced cards, grid layout, progress bars, widgets.
+
+Sidebar Styling:
+- Sidebar is styled for fixed/vertical navigation, with responsive adjustments for mobile.
+- Uses color variables, icons, and transitions for mode toggle and active link highlighting.
+- User info and RC cell count are styled for visibility and consistency.
+
+Theming:
+- Theme switching (human/ghoul) is supported via CSS classes and JS logic.
+- Color and icon changes are handled in both CSS and JS.
+
+Part 4: Firebase Integration and Data Flow
+------------------------------------------
+1. Firebase Setup: config.js, auth.js, database.js, firebase.js, firebase-bridge.js, state.js, ui.js.
+2. User Authentication: All main pages check user authentication state via Firebase.
+3. User Profile & RC Data: On login, user profile is fetched from Firebase Realtime Database.
+4. Sidebar Data Flow: After fetching user profile, JS updates sidebar elements (.user-name, #rc-cell-count).
+5. Tasks, Stats, Battle, Journal: Each feature reads/writes relevant data to Firebase.
+6. Admin Panel: Admin page accesses system stats, user management, and seeding via Firebase.
+
+Part 5: App Structure, Navigation, and Component Interaction
+------------------------------------------------------------
+1. App Structure: Main HTML pages, each loads its own JS and CSS, shares common Firebase and sidebar logic.
+2. Navigation: Sidebar is the primary navigation, present on all main pages except login/loading.
+3. Component Interaction: User authentication and profile data are central; all features depend on user state.
+4. Data Consistency: Real-time updates ensure sidebar and page content reflect the latest user data.
+5. Extensibility: Modular JS and CSS files allow for easy addition of new features or pages.
+
+Summary:
+Your app is a modular, Firebase-powered dashboard with a unified sidebar navigation, real-time user data, and feature-rich pages for profile, stats, battle, journal, and admin management. All components interact through shared data and events, ensuring a consistent and dynamic user experience.
